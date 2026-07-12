@@ -1,0 +1,3452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Чапаев — последний бой!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        #game-container {
+            width: 1080px;
+            height: 2400px;
+            position: relative;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            transition: transform 0.1s ease;
+            transform-origin: top left;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        #game-container.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @media (max-width: 1080px) {
+            body {
+                overflow: hidden;
+            }
+            #game-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+        }
+
+        #screen_next {
+            background: url('assets/images/Screen_Next.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        #screen_start {
+            background: url('assets/images/Screen_start.png') no-repeat center center;
+            background-size: cover;
+        }
+
+        #screen_settings {
+            background: url('assets/images/Screen_settings.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        #screen_game {
+            background: url('assets/images/Screen_game.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        #screen_final_win {
+            background: url('assets/images/Screen_final_win.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        #screen_final_lost {
+            background: url('assets/images/Screen_final_lost.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        #screen_info {
+            background: url('assets/images/Screen_info.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        #screen_score {
+            background: url('assets/images/Screen_score.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        /* ========== ВЕРСИЯ ИГРЫ ========== */
+        .game-version {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            color: #8B0000;
+            font-size: 40px;
+            font-family: Arial, sans-serif;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        /* ========== ЭКРАН ИНФОРМАЦИИ ========== */
+        .info-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+            .info-page.hidden {
+                display: none;
+            }
+
+        .info-version {
+            position: absolute;
+            top: 250px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #8B0000;
+            font-size: 36px;
+            font-family: Arial, sans-serif;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .info-text {
+            position: absolute;
+            top: 350px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 850px;
+            text-align: left;
+            font-family: Arial, sans-serif;
+            font-size: 33px;
+            color: #000000;
+            line-height: 1.5;
+        }
+
+        .info-text-content {
+            width: 100%;
+        }
+
+        .info-text-ru,
+        .info-text-en,
+        .info-text-ru-2,
+        .info-text-en-2 {
+            display: block;
+        }
+
+            .info-text-ru.hidden,
+            .info-text-en.hidden,
+            .info-text-ru-2.hidden,
+            .info-text-en-2.hidden {
+                display: none;
+            }
+
+        /* Кнопки навигации */
+        .info-arrow-btn {
+            position: absolute;
+            bottom: 500px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 110px;
+            height: auto;
+            display: block;
+        }
+
+            .info-arrow-btn:active {
+                transform: scale(0.9);
+            }
+
+        .info-arrow-right {
+            right: 80px;
+        }
+
+        .info-arrow-left {
+            left: 80px;
+        }
+
+        /* Кнопка "В меню" на обеих страницах */
+        #info-page-1 .final-btn,
+        #info-page-2 .final-btn {
+            position: absolute;
+            bottom: 300px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 70%;
+            max-width: 500px;
+            height: auto;
+        }
+
+            #info-page-1 .final-btn:active,
+            #info-page-2 .final-btn:active {
+                transform: translateX(-50%) scale(0.9);
+            }
+
+        /* ========== ЭКРАН НАСТРОЕК ========== */
+        .choice-image {
+            width: 600px;
+            height: auto;
+            display: block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .arrow-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 80px;
+            height: auto;
+            display: block;
+            transform: translateY(155px);
+        }
+
+        .arrow-btn:active {
+            transform: translateY(155px) scale(0.9);
+        }
+
+        .choice-group {
+            position: relative;
+            width: 600px;
+            height: auto;
+        }
+
+        .choice-group .choice-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+        }
+
+        .block-field {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 800px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+        }
+
+        .block-player {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 1100px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+        }
+
+        .block-sound {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 1400px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        .block-class {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 500px; /* ← временно, потом отрегулируешь */
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        .info-buttons {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 550px;
+            display: flex;
+            gap: 120px;
+        }
+
+        .info-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100px;
+            height: auto;
+            display: block;
+        }
+
+        .info-btn:active {
+            transform: scale(0.9);
+        }
+
+        .fight-btn {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 600px;
+            height: auto;
+            bottom: 300px;
+        }
+
+        .fight-btn:active {
+            transform: translateX(-50%) scale(0.9);
+        }
+
+        .next-btn {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.3s ease;
+            width: 400px;
+            height: auto;
+            bottom: 500px;
+            max-width: 90%;
+            display: block;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .next-btn.loaded {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .next-btn:active {
+            transform: translateX(-50%) scale(0.9);
+        }
+
+        #screen_next img {
+            width: 400px;
+            height: auto;
+            max-width: 100%;
+        }
+
+        /* ========== ЭКРАН ИГРЫ ========== */
+        .game-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 550px;
+            padding-bottom: 100px;
+        }
+
+        .top-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 45px;
+            margin-bottom: 30px;
+        }
+
+        .top-panel img {
+            height: 100px;
+            width: auto;
+        }
+
+        .turn-indicator {
+            position: relative;
+            width: 400px;
+            height: 70px;
+        }
+
+        .turn-indicator img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+        }
+
+        .score-block {
+            display: flex;
+            justify-content: space-between;
+            width: 700px;
+            margin-bottom: 50px;
+        }
+
+        .score-left,
+        .score-right {
+            font-size: 50px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px black;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+
+        .game-table {
+            width: 800px;
+            height: auto;
+            display: block;
+        }
+
+        .rotate-block {
+            display: flex;
+            justify-content: center;
+            gap: 650px;
+            margin-bottom: 50px;
+        }
+
+        .rotate-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 80px;
+            height: auto;
+        }
+
+        .rotate-btn:active {
+            transform: scale(0.9);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .resume-btn,
+        .menu-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 500px;
+            height: auto;
+        }
+
+        .resume-btn:active,
+        .menu-btn:active {
+            transform: scale(0.9);
+        }
+
+        #game-scroll-container {
+            position: relative;
+            width: 800px;
+            margin-bottom: 50px;
+            transition: transform 0.3s ease-out;
+        }
+
+        #game-board-container {
+            position: relative;
+            width: 100%;
+        }
+
+        #stones-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .stone {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 200;
+            pointer-events: auto;
+        }
+
+        .stone:active {
+            transform: scale(0.95);
+        }
+
+        .stone img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+            .stone.selected {
+                border-radius: 50%;
+                box-shadow: 0 0 0 9px #66ff66, 0 0 15px rgba(102, 255, 102, 0.6);
+                transition: box-shadow 0.2s;
+            }
+
+        .aim-line {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            transform-origin: left center;
+        }
+
+        .final-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 500px;
+            height: auto;
+            position: absolute;
+            bottom: 350px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .final-btn:active {
+            transform: translateX(-50%) scale(0.9);
+        }
+
+        /* ========== СТАТИСТИКА ========== */
+        #screen_score {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .stats-container {
+            position: absolute;
+            top: 450px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 900px;
+            font-size: 45px;
+            text-align: center;
+            padding: 15px 20px;
+         
+            
+        }
+        .stats-class {
+            font-size: 45px;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            color: #ff4444;
+        }
+
+        .stats-mode {
+            font-size: 45px;
+            font-weight: bold;
+            color: #000000;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            /* ФОН */
+            background: rgba(100, 100, 100, 0.2);
+            padding: 8px 15px;
+            border-radius: 8px;
+            /* display: inline-block; /* чтобы фон был только под текстом */
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            font-size: 26px;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stats-value-total {
+            font-weight: bold;
+            color: #000000;
+            font-size: 40px;
+        }
+
+        .stats-value-red {
+            color: #ff4444;
+            font-weight: bold;
+            font-size: 40px;
+        }
+
+        .stats-value-white {
+            color: #000000;
+            font-weight: bold;
+            font-size: 40px;
+        }
+
+        .stats-header-row {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            font-size: 45px;
+            font-weight: bold;
+            color: #000000;
+            border-bottom: 4px solid #000000;
+            margin-bottom: 10px;
+        }
+
+        .stats-divider {
+            border: 2px solid #000000;
+            margin: 10px 0;
+        }
+
+        .stats-empty {
+            font-size: 30px;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        /* ========== КНОПКА "В МЕНЮ" НА ФОРМЕ СТАТИСТИКИ ========== */
+        .score-menu-btn {
+            width: 70%;
+            max-width: 500px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: absolute;
+            bottom: 300px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+            .score-menu-btn:active {
+                transform: translateX(-50%) scale(0.95);
+            }
+
+        /* ========== МОДАЛЬНОЕ ОКНО СОГЛАСИЯ ========== */
+        #agreement-overlay {
+            display: none !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+            #agreement-overlay.active {
+                display: flex !important;
+            }
+
+        .agreement-modal {
+            background: url('assets/images/Form_agreemment.png') no-repeat center center;
+            background-size: cover;
+            width: 100%;
+            max-width: 900px;
+            padding: 60px 40px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .agreement-text {
+            font-size: 80px;
+            font-weight: bold;
+            color: #000000;
+            line-height: 1.4;
+            margin-bottom: 40px;
+        }
+
+        .agreement-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .agreement-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 400px;
+            height: auto;
+            display: block;
+        }
+
+            .agreement-btn:active {
+                transform: scale(0.9);
+            }
+
+        .lang-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .lang-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100px;
+            height: auto;
+            display: block;
+        }
+
+        .lang-btn:active {
+            transform: scale(0.9);
+        }
+
+        .lang-btn.hidden {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            /* ===== Форма информации ===== */
+            .info-text {
+                font-size: 25px;
+            }
+
+            .info-version {
+                font-size: 25px;
+            }
+
+            /* ===== Модальное окно согласия ===== */
+            .agreement-text {
+                font-size: 40px;
+                margin-bottom: 30px;
+            }
+
+            .agreement-btn {
+                width: 350px;
+            }
+
+            .agreement-buttons {
+                gap: 15px;
+            }
+
+            .agreement-modal {
+                width: 90% !important;
+                padding: 40px 20px;
+            }
+        }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="screen_next" class="screen active">
+            <img src="assets/images/Button_Next.png" alt="Далее" class="next-btn" id="btn-next">
+        </div>
+
+        <div id="screen_start" class="screen">
+            <div class="game-version" id="game-version-start"></div>
+        </div>
+
+        <div id="screen_settings" class="screen">
+            <!-- Блок выбора класса игры -->
+            <div class="block-class">
+                <img src="assets/images/Button_left_0_1.png" alt="Влево" class="arrow-btn" id="btn-class-left">
+                <div class="choice-group" id="class-group">
+                    <img src="assets/images/Button_choose_class_1.png" alt="Класс 1" id="class-1" class="choice-image">
+                    <img src="assets/images/Button_choose_class_2.png" alt="Класс 2" id="class-2" class="choice-image hidden">
+                    <!-- Классы 3-5 пока закомментированы
+                <img src="assets/images/Button_choose_class_3.png" alt="Класс 3" id="class-3" class="choice-image hidden">
+                <img src="assets/images/Button_choose_class_4.png" alt="Класс 4" id="class-4" class="choice-image hidden">
+                <img src="assets/images/Button_choose_class_5.png" alt="Класс 5" id="class-5" class="choice-image hidden">
+                -->
+                </div>
+                <img src="assets/images/Button_right_0_2.png" alt="Вправо" class="arrow-btn" id="btn-class-right">
+            </div>
+            <div class="block-field">
+                <img src="assets/images/Button_left_1_1.png" alt="Влево" class="arrow-btn" id="btn-field-left">
+                <div class="choice-group" id="field-group">
+                    <img src="assets/images/Sign_choose_game_field_Last_fight.png" alt="Два игрока" id="field-last" class="choice-image">
+                    <img src="assets/images/Sign_choose_game_field_Straight_attack_easy.png" alt="Против компьютера (легко)" id="field-straight-easy" class="choice-image hidden">
+                    <img src="assets/images/Sign_choose_game_field_Straight_attack_hard.png" alt="Против компьютера (сложно)" id="field-straight-hard" class="choice-image hidden">
+                </div>
+                <img src="assets/images/Button_right_1_2.png" alt="Вправо" class="arrow-btn" id="btn-field-right">
+            </div>
+
+            <div class="block-player">
+                <img src="assets/images/Button_left_2_1.png" alt="Влево" class="arrow-btn" id="btn-player-left">
+                <div class="choice-group" id="player-group">
+                    <img src="assets/images/Button_choose_player_red.png" alt="Красные" id="player-red" class="choice-image">
+                    <img src="assets/images/Button_choose_player_white.png" alt="Белые" id="player-white" class="choice-image hidden">
+                    <img src="assets/images/Button_choose_player_cases.png" alt="Случайно" id="player-cases" class="choice-image hidden">
+                </div>
+                <img src="assets/images/Button_right_2_2.png" alt="Вправо" class="arrow-btn" id="btn-player-right">
+            </div>
+
+            <div class="block-sound">
+                <img src="assets/images/Button_left_3_1.png" alt="Влево" class="arrow-btn" id="btn-sound-left">
+                <div class="choice-group" id="sound-group">
+                    <img src="assets/images/Button_choose_sound_on.png" alt="Звук вкл" id="sound-on" class="choice-image">
+                    <img src="assets/images/Button_choose_sound_off.png" alt="Звук выкл" id="sound-off" class="choice-image hidden">
+                </div>
+                <img src="assets/images/Button_right_3_2.png" alt="Вправо" class="arrow-btn" id="btn-sound-right">
+            </div>
+
+            <div class="info-buttons">
+                <img src="assets/images/Button_info.png" alt="Информация" class="info-btn" id="btn-info">
+                <div class="lang-buttons">
+                    <img src="assets/images/Button_lang_RU.png" alt="Русский" class="lang-btn" id="btn-lang-ru">
+                    <img src="assets/images/Button_lang_EN.png" alt="English" class="lang-btn hidden" id="btn-lang-en">
+                </div>
+                <img src="assets/images/Button_score.png" alt="Статистика" class="info-btn" id="btn-to-score">
+                <img src="assets/images/VK_AEK_games.png"
+                     alt="Сообщество АЕК игры"
+                     class="info-btn"
+                     id="btn-to-community"
+                     style="cursor: pointer; transition: transform 0.2s;"
+                     onmousedown="this.style.transform='scale(0.9)'"
+                     onmouseup="this.style.transform='scale(1)'"
+                     onmouseleave="this.style.transform='scale(1)'"
+                     ontouchstart="this.style.transform='scale(0.9)'"
+                     ontouchend="this.style.transform='scale(1)'"
+                     onclick="window.open('https://vk.ru/aekgames', '_blank'); playSound('OpenNewFormSound.mp3');">
+            </div>
+
+            <img src="assets/images/Button_to_fight.png" alt="Сражаться" class="fight-btn" id="btn-to-fight">
+        </div>
+
+        <div id="screen_game" class="screen">
+            <div class="game-content">
+                <div class="top-panel">
+                    <img src="assets/images/Label_star.png" alt="Звезда" class="star-icon">
+                    <div class="turn-indicator" id="turn-indicator">
+                        <img src="assets/images/Sign_turn_red.png" alt="Ход красных" id="turn-red">
+                        <img src="assets/images/Sign_turn_white.png" alt="Ход белых" id="turn-white" class="hidden">
+                    </div>
+                    <img src="assets/images/Label_cross.png" alt="Крест" class="cross-icon">
+                </div>
+
+                <div class="score-block">
+                    <div class="score-left" id="red-score">8/0</div>
+                    <div class="score-right" id="white-score">8/0</div>
+                </div>
+
+                <div id="game-scroll-container">
+                    <div id="game-board-container">
+                        <img src="assets/images/GameTable.png" alt="Игровое поле" class="game-table" id="game-table">
+                        <div id="stones-container"></div>
+                    </div>
+                </div>
+
+                <div class="rotate-block">
+                    <img src="assets/images/Button_turn_left.png" alt="Сдвинуть влево" class="rotate-btn" id="btn-move-left">
+                    <img src="assets/images/Button_turn_right.png" alt="Сдвинуть вправо" class="rotate-btn" id="btn-move-right">
+                </div>
+
+                <div class="action-buttons">
+                    <img src="assets/images/Button_resume.png" alt="Перезапуск" class="resume-btn" id="btn-resume">
+                    <img src="assets/images/Button_to_menu_1.png" alt="В меню" class="menu-btn" id="btn-to-menu">
+                </div>
+            </div>
+        </div>
+
+        <div id="screen_final_win" class="screen">
+            <img src="assets/images/Button_to_menu_3.png" alt="В меню" class="final-btn" id="btn-win-to-menu">
+        </div>
+
+        <div id="screen_final_lost" class="screen">
+            <img src="assets/images/Button_to_menu_2.png" alt="В меню" class="final-btn" id="btn-lost-to-menu">
+        </div>
+
+        <!-- ====== ЭКРАН ИНФОРМАЦИИ ====== -->
+
+        <div id="screen_info" class="screen">
+            <!-- Страница 1 -->
+            <div class="info-page" id="info-page-1">
+                <div class="info-version" id="game-version-info"></div>
+                <div class="info-text">
+                    <div class="info-text-content">
+                        <span class="info-text-ru">
+                            *ЦЕЛЬ ИГРЫ:*<br>
+                            Выбейте все шашки противника с игрового поля. Игроки по очереди наносят удары. Очередность первого хода определяется настройками игры. Проигравший раунд всегда начинает первым. Игрок, выбивший все шашки соперника, перемещает свои шашки на одну линию вперед. Проигравший игрок отступает на одну линию назад, если до этого его шашки продвигались вперед. Постепенно шашки противников сближаются настолько, что оказываются рядом друг с другом. Игра заканчивается, когда один игрок вытолкнет шашки другого игрока с последней линии. В решающей битве на последней линии первый ход всегда делает проигрывающий игрок.<br>
+                            <br>
+                            *ВЫБОР КЛАССА ИГРЫ:*<br>
+                            В игре доступны два класса, которые отличаются уровнем сложности:<br>
+                            <b>Классический</b> — при захвате шашки отображается стрелка, показывающая направление и силу удара.<br>
+                            Идеальный выбор для новичков и тех, кто хочет видеть все параметры своего хода.<br>
+
+                        </span>
+                        <span class="info-text-en hidden">
+                            *GAME OBJECTIVE:*<br>
+                            Knock all of the opponent's checkers off the board. Players take turns making moves. The order of the first move is determined by the game settings. The player who loses a round always goes first. The player who knocks all of the opponent's checkers moves their own checkers one row forward. The losing player moves back one row if their checkers had previously advanced. Gradually, the opponents' checkers come closer until they are next to each other. The game ends when one player pushes the other player's checkers off the last row. In the final battle on the last row, the losing player always makes the first move.<br>
+                            <br>
+                            *GAME CLASS SELECTION:*<br>
+                            Two game classes are available, differing in difficulty level:<br>
+                            <b>Classic</b> — when you grab a checker, an arrow is displayed, showing the direction and power of your strike.<br>
+                            An ideal choice for beginners and those who want to see all the parameters of their move.<br>
+
+                        </span>
+                    </div>
+                </div>
+                <!-- Кнопка "Вправо" (переход на страницу 2) -->
+                <img src="assets/images/Button_turn_right.png" alt="Вправо" class="info-arrow-btn info-arrow-right" id="btn-info-right">
+                <!-- Кнопка "В меню" на странице 1 -->
+                <img src="assets/images/Button_to_menu_4.png" alt="В меню" class="final-btn" id="btn-info-to-menu-1">
+            </div>
+
+            <!-- Страница 2 -->
+            <div class="info-page hidden" id="info-page-2">
+                <div class="info-version" id="game-version-info-2"></div>
+                <div class="info-text">
+                    <div class="info-text-content">
+                        <span class="info-text-ru-2">
+                            <b>Классический PRO</b> — стрелка силы и направления удара <b>не отображается</b>.<br>
+                            Вам предстоит полагаться только на свою интуицию, опыт и точность расчёта.<br>
+                            Режим для настоящих профессионалов!<br>
+                            <br>
+                            *ИГРОВАЯ МЕХАНИКА:*<br>
+                            Коснитесь пальцем одной из ваших шашек и проведите в противоположную от шашек противника сторону, не отпуская пальца. Отпустив палец, вы произведете удар. Чем дальше отведёте палец, тем сильнее будет удар. Ориентируйтесь на красную стрелку - она показывает направление удара.<br><br>
+                            *ОСОБЕННОСТИ:*<br>
+                            Вы можете двигать игровое поле влево и вправо, чтобы выбрать наилучшую позицию для нанесения удара шашкой, которая располагается близко к правой или левой границе экрана.
+                        </span>
+                        <span class="info-text-en-2 hidden">
+                            <b>Classic PRO</b> — the arrow showing power and direction is <b>not displayed</b>.<br>
+                            You will have to rely solely on your intuition, experience, and precision.<br>
+                            <br>
+                            A mode for true professionals!
+                            *GAME MECHANICS:*<br>
+                            Touch one of your checkers with your finger and swipe it in the direction opposite to the opponent's checkers without lifting your finger. Releasing your finger will perform a strike. The farther you pull your finger, the stronger the strike. Use the red arrow as a guide—it shows the direction of the strike.<br><br>
+                            *FEATURES:*<br>
+                            You can move the game board left and right to choose the best position to strike with a checker located near the right or left edge of the screen.
+                        </span>
+                    </div>
+                </div>
+                <!-- Кнопка "Влево" (переход на страницу 1) -->
+                <img src="assets/images/Button_turn_left.png" alt="Влево" class="info-arrow-btn info-arrow-left" id="btn-info-left">
+                <!-- Кнопка "В меню" на странице 2 -->
+                <img src="assets/images/Button_to_menu_4.png" alt="В меню" class="final-btn" id="btn-info-to-menu-2">
+            </div>
+        </div>
+
+        <!-- ====== ЭКРАН СТАТИСТИКИ ====== -->
+        <div id="screen_score" class="screen">
+            <!-- Контейнер статистики -->
+            <div class="stats-container" id="stats-container">
+                <!-- Заголовок -->
+                <div class="stats-header-row">
+                    <span>Всего игр</span>
+                    <span>Победы Кр.</span>
+                    <span>Победы Бел.</span>
+                </div>
+                <!-- Динамические данные -->
+                <div id="stats-content"></div>
+            </div>
+            <!-- Кнопка "В меню" — НЕ ТРОГАЕМ -->
+            <img src="assets/images/Button_to_menu_1.png" alt="В меню" class="score-menu-btn" id="btn-score-to-menu">
+        </div>
+
+        <!-- ====== МОДАЛЬНОЕ ОКНО СОГЛАСИЯ ====== -->
+        <div id="agreement-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
+            <div class="agreement-modal">
+                <div class="agreement-text" id="agreement-text">
+                    <!-- Текст будет вставлен через JavaScript -->
+                </div>
+                <div class="agreement-buttons">
+                    <img src="assets/images/Button_Agree_Form_agreemment.png" alt="Согласен" class="agreement-btn" id="btn-agree">
+                    <img src="assets/images/Button_Cancel_Form_agreemment.png" alt="Отмена" class="agreement-btn" id="btn-cancel">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ПРАВИЛЬНОЕ ПОДКЛЮЧЕНИЕ VK BRIDGE -->
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+
+    <script>
+        // ========== ПРОВЕРКА ОКРУЖЕНИЯ ==========
+        let isInVK = false;
+        let vkBridge = null;
+        let isVKBridgeReady = false;
+        let bannerShown = false;
+
+        // ========== ПОДПИСКА НА СОБЫТИЯ VK BRIDGE ==========
+        function setupVKBridgeSubscriptions() {
+            if (!vkBridge) return;
+
+            vkBridge.subscribe((event) => {
+                if (!event || !event.detail) return;
+
+                const eventType = event.detail.type;
+                console.log('📨 Событие VK Bridge:', eventType);
+
+                switch (eventType) {
+                    case 'VKWebAppUpdateConfig':
+                        console.log('🔄 Обновление конфигурации:', event.detail.data);
+                        const data = event.detail.data;
+                        if (data.scheme) {
+                            applyTheme(data.scheme);
+                        }
+                        break;
+
+                    case 'VKWebAppViewHide':
+                        console.log('📱 Приложение ушло в фон');
+                        pauseGame();
+                        break;
+
+                    case 'VKWebAppViewRestore':
+                        console.log('📱 Приложение вернулось из фона');
+                        resumeGame();
+                        break;
+
+                    case 'VKWebAppBannerAdUpdated':
+                        console.log('🔄 Баннер обновлён');
+                        break;
+
+                    case 'VKWebAppBannerAdClosedByUser':
+                        console.log('👆 Пользователь закрыл баннер');
+                        console.log('📊 СОСТОЯНИЕ ДО ВОЗОБНОВЛЕНИЯ:');
+                        console.log('  - isGameActive:', isGameActive);
+                        console.log('  - isGamePaused:', isGamePaused);
+                        console.log('  - isPhysicsRunning:', isPhysicsRunning);
+                        console.log('  - gameLoopId:', gameLoopId);
+                        console.log('  - turnFlag:', turnFlag);
+                        console.log('  - isDragging:', isDragging);
+                        console.log('  - selectedStone:', selectedStone ? 'есть' : 'null');
+                        bannerShown = false;
+                        resumeGame();
+                        break;
+                }
+            });
+
+            console.log('✅ Подписка на события VK Bridge настроена');
+        }
+
+        // ========== УПРАВЛЕНИЕ ФОНОВЫМ РЕЖИМОМ ==========
+        let isGamePaused = false;
+        let savedGameState = null;
+
+        function pauseGame() {
+            if (isGameActive && !isGamePaused) {
+                console.log('⏸️ Приостановка игры (фоновый режим)');
+                isGamePaused = true;
+
+                savedGameState = {
+                    turnFlag: turnFlag,
+                    redLines: redLines,
+                    whiteLines: whiteLines,
+                    currentRedY: currentRedY,
+                    currentWhiteY: currentWhiteY,
+                    redScore: document.getElementById('red-score').textContent,
+                    whiteScore: document.getElementById('white-score').textContent,
+                    stones: stonesList.map(s => ({
+                        team: s.team,
+                        x: s.x,
+                        y: s.y,
+                        vx: s.vx,
+                        vy: s.vy,
+                        active: s.active,
+                        element: s.element
+                    }))
+                };
+
+                stopPhysics();
+                console.log('✅ Физика остановлена');
+            }
+        }
+
+        function resumeGame() {
+            console.log('▶️ resumeGame() ВЫЗВАН');
+            console.log('📊 ВХОДНЫЕ ПАРАМЕТРЫ:');
+            console.log('  - isGameActive:', isGameActive);
+            console.log('  - isGamePaused:', isGamePaused);
+            console.log('  - isPhysicsRunning:', isPhysicsRunning);
+            console.log('  - gameLoopId:', gameLoopId);
+            console.log('  - turnFlag:', turnFlag);
+            console.log('  - isDragging:', isDragging);
+            console.log('  - selectedStone:', selectedStone ? 'есть' : 'null');
+
+            if (isGamePaused) {
+                console.log('🔄 Восстановление сохранённого состояния (isGamePaused === true)');
+                isGamePaused = false;
+
+                if (savedGameState) {
+                    console.log('  - savedGameState существует, восстанавливаем...');
+                    turnFlag = savedGameState.turnFlag;
+                    redLines = savedGameState.redLines;
+                    whiteLines = savedGameState.whiteLines;
+                    currentRedY = savedGameState.currentRedY;
+                    currentWhiteY = savedGameState.currentWhiteY;
+
+                    document.getElementById('red-score').textContent = savedGameState.redScore;
+                    document.getElementById('white-score').textContent = savedGameState.whiteScore;
+
+                    updateTurnIndicator();
+
+                    savedGameState.stones.forEach((savedStone, index) => {
+                        if (index < stonesList.length) {
+                            const stone = stonesList[index];
+                            stone.x = savedStone.x;
+                            stone.y = savedStone.y;
+                            stone.vx = savedStone.vx;
+                            stone.vy = savedStone.vy;
+                            stone.active = savedStone.active;
+                            if (stone.element) {
+                                if (stone.active) {
+                                    stone.element.style.display = 'block';
+                                    stone.element.style.left = `${stone.x - stone.radius}px`;
+                                    stone.element.style.top = `${stone.y - stone.radius}px`;
+                                } else {
+                                    stone.element.style.display = 'none';
+                                }
+                            }
+                        }
+                    });
+
+                    savedGameState = null;
+
+                    isGameActive = true;
+                    console.log('  ✅ isGameActive принудительно установлен в true');
+                } else {
+                    console.log('  ⚠️ savedGameState === null, пропускаем восстановление');
+                }
+            } else {
+                console.log('📌 isGamePaused === false, пропускаем восстановление состояния');
+            }
+
+            if (isDragging) {
+                console.log('🔄 Сброс состояния перетаскивания (isDragging === true)');
+                isDragging = false;
+                selectedStone = null;
+                removeAimLine();
+            } else {
+                console.log('📌 isDragging === false, сброс не нужен');
+            }
+
+            console.log('📊 ПРОВЕРКА ЗАПУСКА ФИЗИКИ:');
+            console.log('  - isGameActive:', isGameActive);
+            console.log('  - isPhysicsRunning:', isPhysicsRunning);
+
+            if (isGameActive && !isPhysicsRunning) {
+                console.log('🚀 ЗАПУСКАЕМ ФИЗИКУ (isGameActive && !isPhysicsRunning)');
+                startPhysics();
+                console.log('  ✅ startPhysics() вызван');
+            } else if (isGameActive && isPhysicsRunning) {
+                console.log('✅ Физика уже запущена, ничего не делаем');
+            } else if (!isGameActive) {
+                console.log('⚠️ ИГРА НЕ АКТИВНА (isGameActive === false)');
+                console.log('  - Это нормально, если мы между раундами');
+                console.log('  - Игра будет запущена при следующем действии пользователя');
+            }
+
+            updateTurnIndicator();
+            console.log('🔄 Индикатор хода обновлён, turnFlag =', turnFlag);
+            console.log('📊 ИТОГОВОЕ СОСТОЯНИЕ:');
+            console.log('  - isGameActive:', isGameActive);
+            console.log('  - isPhysicsRunning:', isPhysicsRunning);
+            console.log('  - isGamePaused:', isGamePaused);
+            console.log('  - isDragging:', isDragging);
+            console.log('  - turnFlag:', turnFlag);
+            console.log('  - stonesList.length:', stonesList.length);
+            console.log('  - активных шашек:', stonesList.filter(s => s.active).length);
+            console.log('▶️ resumeGame() ЗАВЕРШЁН');
+        }
+
+        // ========== ПРИМЕНЕНИЕ ТЕМЫ ==========
+        function applyTheme(scheme) {
+            console.log('🎨 Применение темы:', scheme);
+            const container = document.getElementById('game-container');
+            if (!container) return;
+
+            switch (scheme) {
+                case 'vkcom_dark':
+                case 'space_gray':
+                    container.style.backgroundColor = '#1a1a2e';
+                    document.querySelector('body').style.backgroundColor = '#0a0a1a';
+                    break;
+                case 'vkcom_light':
+                case 'bright_light':
+                    container.style.backgroundColor = '#f0f0f0';
+                    document.querySelector('body').style.backgroundColor = '#e0e0e0';
+                    break;
+                default:
+                    container.style.backgroundColor = '#1a1a1a';
+                    document.querySelector('body').style.backgroundColor = '#000';
+            }
+        }
+
+        // ========== ИНИЦИАЛИЗАЦИЯ VK BRIDGE ==========
+        async function initVKBridge() {
+            console.log('🔄 Инициализация VK Bridge...');
+
+            let attempts = 0;
+            const maxAttempts = 30;
+
+            await new Promise((resolve) => {
+                if (typeof vkBridge !== 'undefined' || window.vkBridge) {
+                    resolve();
+                    return;
+                }
+
+                const checkInterval = setInterval(() => {
+                    attempts++;
+                    if (typeof vkBridge !== 'undefined' || window.vkBridge) {
+                        clearInterval(checkInterval);
+                        resolve();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkInterval);
+                        console.warn('⚠️ VK Bridge не загрузился после ' + maxAttempts + ' попыток');
+                        resolve();
+                    }
+                }, 100);
+            });
+
+            vkBridge = window.vkBridge || vkBridge;
+
+            if (!vkBridge) {
+                console.warn('⚠️ VK Bridge не доступен, использую fallback');
+                isInVK = false;
+                return false;
+            }
+
+            isInVK = true;
+            console.log('✅ VK Bridge загружен');
+
+            try {
+                console.log('📤 Отправка VKWebAppInit...');
+                const result = await vkBridge.send('VKWebAppInit', {});
+                console.log('✅ VK Bridge инициализирован!', result);
+                isVKBridgeReady = true;
+
+                setupVKBridgeSubscriptions();
+                await renderStats();
+                await showBannerAd();
+
+                return true;
+            } catch (error) {
+                console.error('❌ Ошибка инициализации VK Bridge:', error);
+                isInVK = false;
+                isVKBridgeReady = false;
+                return false;
+            }
+        }
+
+        function checkEnvironment() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const vkAccessToken = urlParams.get('vk_access_token');
+            const vkAppId = urlParams.get('vk_app_id');
+            const hasVK = typeof VK !== 'undefined' && VK.init;
+
+            if (vkAccessToken || vkAppId || hasVK) {
+                isInVK = true;
+                console.log('✅ Игра запущена внутри VK Mini App');
+                return true;
+            }
+
+            if (document.referrer.includes('vk.com') || document.referrer.includes('vk.')) {
+                isInVK = true;
+                console.log('✅ Игра запущена из VK (по рефереру)');
+                return true;
+            }
+
+            console.log('⚠️ Игра запущена вне VK Mini App, использую localStorage fallback');
+            return false;
+        }
+
+        // ========== РЕКЛАМА ==========
+        let roundCounter = 0;
+        const FULLSCREEN_AD_INTERVAL = 6;
+
+        async function checkNativeAds(adFormat) {
+            if (!isInVK || !vkBridge || !isVKBridgeReady) {
+                console.log('⏭️ Проверка рекламы пропущена (не в VK)');
+                return false;
+            }
+
+            try {
+                const result = await vkBridge.send('VKWebAppCheckNativeAds', {
+                    ad_format: adFormat
+                });
+                console.log(`📊 Реклама (${adFormat}) доступна:`, result.result);
+                return result.result;
+            } catch (error) {
+                console.error('❌ Ошибка проверки рекламы:', error);
+                return false;
+            }
+        }
+
+        async function showInterstitialAd() {
+            if (!isInVK || !vkBridge || !isVKBridgeReady) {
+                console.log('⏭️ Реклама не показана (не в VK)');
+                return false;
+            }
+
+            try {
+                const available = await checkNativeAds('interstitial');
+                if (!available) {
+                    console.log('⚠️ Межстраничная реклама недоступна');
+                    return false;
+                }
+
+                console.log('📺 Показ межстраничной рекламы...');
+                const result = await vkBridge.send('VKWebAppShowNativeAds', {
+                    ad_format: 'interstitial'
+                });
+                console.log('✅ Межстраничная реклама показана:', result);
+                return result.result;
+            } catch (error) {
+                console.error('❌ Ошибка показа рекламы:', error);
+                return false;
+            }
+        }
+
+        async function showBannerAd() {
+            if (!isInVK || !vkBridge || !isVKBridgeReady) {
+                console.log('⏭️ Баннер не показан (не в VK)');
+                return false;
+            }
+
+            if (bannerShown) {
+                console.log('⏭️ Баннер уже показан');
+                return true;
+            }
+
+            try {
+                console.log('📊 Показ баннера...');
+                const result = await vkBridge.send('VKWebAppShowBannerAd', {
+                    banner_location: 'bottom',
+                    layout_type: 'overlay'
+                });
+                console.log('✅ Баннер показан:', result);
+                bannerShown = true;
+                return result.result;
+            } catch (error) {
+                console.error('❌ Ошибка показа баннера:', error);
+                return false;
+            }
+        }
+
+        async function hideBannerAd() {
+            if (!isInVK || !vkBridge || !isVKBridgeReady || !bannerShown) {
+                return false;
+            }
+
+            try {
+                const result = await vkBridge.send('VKWebAppHideBannerAd');
+                console.log('✅ Баннер скрыт:', result);
+                bannerShown = false;
+                return result.result;
+            } catch (error) {
+                console.error('❌ Ошибка скрытия баннера:', error);
+                return false;
+            }
+        }
+
+        async function checkBannerAd() {
+            if (!isInVK || !vkBridge || !isVKBridgeReady) {
+                return false;
+            }
+
+            try {
+                const result = await vkBridge.send('VKWebAppCheckBannerAd');
+                bannerShown = result.result;
+                return result.result;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function checkAndShowAd() {
+            if (!isInVK) return false;
+            roundCounter++;
+            if (roundCounter >= FULLSCREEN_AD_INTERVAL) {
+                roundCounter = 0;
+                await hideBannerAd();
+                const result = await showInterstitialAd();
+                return result;
+            }
+            return false;
+        }
+
+        async function resetAndShowAd() {
+            if (!isInVK) return false;
+            roundCounter = 0;
+            await hideBannerAd();
+            const result = await showInterstitialAd();
+            return result;
+        }
+
+        // ========== VK STORAGE / localStorage FALLBACK ==========
+        // ========================================================================
+        // ========== СТАТИСТИКА С VK STORAGE ==========
+        // ========================================================================
+
+        const STATS_KEY = 'chapaev_stats_v2';
+
+        // ----- Структура по умолчанию -----
+        function getDefaultStats() {
+            return {
+                'Классический': {
+                    'Два игрока': { total: 0, redWins: 0, whiteWins: 0 },
+                    'С компьютером (легко)': { total: 0, redWins: 0, whiteWins: 0 },
+                    'С компьютером (сложно)': { total: 0, redWins: 0, whiteWins: 0 }
+                },
+                'Классический PRO': {
+                    'Два игрока': { total: 0, redWins: 0, whiteWins: 0 },
+                    'С компьютером (легко)': { total: 0, redWins: 0, whiteWins: 0 },
+                    'С компьютером (сложно)': { total: 0, redWins: 0, whiteWins: 0 }
+                }
+            };
+        }
+
+        // ----- Загрузить с VK Storage или localStorage -----
+        async function loadStats() {
+            // Сначала пробуем загрузить из VK Storage
+            if (isInVK && vkBridge && isVKBridgeReady) {
+                try {
+                    const response = await vkBridge.send('VKWebAppStorageGet', {
+                        keys: [STATS_KEY]
+                    });
+
+                    if (response.keys && response.keys.length > 0 && response.keys[0].value) {
+                        const stats = JSON.parse(response.keys[0].value);
+                        // Кэшируем в localStorage
+                        localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+                        console.log('✅ Статистика загружена из VK Storage');
+                        return stats;
+                    }
+                } catch (e) {
+                    console.error('❌ Ошибка загрузки из VK Storage:', e);
+                }
+            }
+
+            // Fallback на localStorage
+            const saved = localStorage.getItem(STATS_KEY);
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    console.error('❌ Ошибка парсинга localStorage:', e);
+                }
+            }
+            
+            return getDefaultStats();
+        }
+
+        // ----- Сохранить в VK Storage и localStorage -----
+        async function saveStats(stats) {
+            // Всегда сохраняем в localStorage как резерв
+            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+
+            // Сохраняем в VK Storage, если доступно
+            if (isInVK && vkBridge && isVKBridgeReady) {
+                try {
+                    await vkBridge.send('VKWebAppStorageSet', {
+                        key: STATS_KEY,
+                        value: JSON.stringify(stats)
+                    });
+                    console.log('✅ Статистика сохранена в VK Storage');
+                    return;
+                } catch (e) {
+                    console.error('❌ Ошибка сохранения в VK Storage:', e);
+                }
+            }
+
+            console.log('📦 Статистика сохранена в localStorage (VK Storage недоступен)');
+        }
+
+        // ----- Обновить статистику -----
+        async function updateStats(className, modeName, isRedWin) {
+            const stats = await loadStats();
+            
+            if (!stats[className]) stats[className] = {};
+            if (!stats[className][modeName]) {
+                stats[className][modeName] = { total: 0, redWins: 0, whiteWins: 0 };
+            }
+            
+            stats[className][modeName].total++;
+            if (isRedWin) {
+                stats[className][modeName].redWins++;
+            } else {
+                stats[className][modeName].whiteWins++;
+            }
+            
+            await saveStats(stats);
+        }
+
+        // ----- Отобразить статистику -----
+        async function renderStats() {
+            const container = document.getElementById('stats-content');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const stats = await loadStats();
+            const classKeys = Object.keys(stats);
+
+            if (classKeys.length === 0) {
+                container.innerHTML = '<div class="stats-empty">Нет данных для отображения</div>';
+                return;
+            }
+
+            let isFirstClass = true;
+
+            classKeys.forEach((className) => {
+                if (!isFirstClass) {
+                    const divider = document.createElement('hr');
+                    divider.className = 'stats-divider';
+                    container.appendChild(divider);
+                }
+                isFirstClass = false;
+
+                const classTitle = document.createElement('div');
+                classTitle.className = 'stats-class';
+                classTitle.textContent = ` ★ ${className} ★ `;
+                container.appendChild(classTitle);
+
+                const modes = stats[className];
+                const modeKeys = Object.keys(modes);
+
+                modeKeys.forEach((modeName) => {
+                    const data = modes[modeName];
+
+                    const modeTitle = document.createElement('div');
+                    modeTitle.className = 'stats-mode';
+                    modeTitle.textContent = modeName;
+                    container.appendChild(modeTitle);
+
+                    const row = document.createElement('div');
+                    row.className = 'stats-row';
+
+                    const total = data.total || 0;
+                    const redWins = data.redWins || 0;
+                    const whiteWins = data.whiteWins || 0;
+
+                    const redPercent = total > 0 ? Math.round((redWins / total) * 100) : 0;
+                    const whitePercent = total > 0 ? Math.round((whiteWins / total) * 100) : 0;
+
+                    row.innerHTML = `
+                        <span class="stats-value-total">${total}</span>
+                        <span class="stats-value-red">${redWins} (${redPercent}%)</span>
+                        <span class="stats-value-white">${whiteWins} (${whitePercent}%)</span>
+                    `;
+                    container.appendChild(row);
+                });
+            });
+        }
+
+        // ----- Функция addGameResult -----
+        async function addGameResult(isWin, className, modeName) {
+            if (className && modeName) {
+                await updateStats(className, modeName, isWin);
+            }
+        }
+
+        // ----- Обработчик кнопки статистики -----
+        document.getElementById('btn-to-score').addEventListener('click', async function () {
+            playSound('OpenNewFormSound.mp3');
+            await renderStats();
+            switchScreen('screen_score');
+        });
+
+        // ----- Обработчик кнопки "В меню" -----
+        document.getElementById('btn-score-to-menu').addEventListener('click', async function () {
+            playSound('OpenNewFormSound.mp3');
+            stopPhysics();
+            await showBannerAd();
+            switchScreen('screen_settings');
+        });
+
+        // ========== ВЕРСИЯ ИГРЫ ==========
+        const GAME_VERSION = "1.1.0";
+
+function setGameVersions() {
+    const versionStart = document.getElementById('game-version-start');
+    if (versionStart) {
+        versionStart.textContent = `v${GAME_VERSION}`;
+    }
+    const versionInfo = document.getElementById('game-version-info');
+    if (versionInfo) {
+        versionInfo.textContent = `Версия: ${GAME_VERSION}`;
+    }
+    const versionInfo2 = document.getElementById('game-version-info-2');
+    if (versionInfo2) {
+        versionInfo2.textContent = `Версия: ${GAME_VERSION}`;
+    }
+}
+
+        // ========== ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ ==========
+        function switchScreen(screenId) {
+            if (screenId !== 'screen_game') {
+                if (gameLoopId) {
+                    cancelAnimationFrame(gameLoopId);
+                    gameLoopId = null;
+                }
+                isPhysicsRunning = false;
+                isGameActive = false;
+                removeAimLine();
+                isDragging = false;
+                selectedStone = null;
+            }
+
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+
+            // Сбрасываем на первую страницу информации при открытии
+            if (screenId === 'screen_info') {
+                switchInfoPage(1);
+            }
+
+            if (screenId === 'screen_game' || screenId === 'screen_final_win' || screenId === 'screen_final_lost') {
+                hideBannerAd();
+            } else {
+                showBannerAd();
+            }
+        }
+
+        // ========== ЗВУКИ ==========
+        let isSoundEnabled = true;
+        let beatSound = null;
+
+        function playSound(soundFile) {
+            if (!isSoundEnabled) return;
+
+            try {
+                if (soundFile === 'BeatSound.mp3') {
+                    if (!beatSound) {
+                        beatSound = new Audio(`assets/sounds/${soundFile}`);
+                        beatSound.volume = 0.6;
+                    } else {
+                        beatSound.pause();
+                        beatSound.currentTime = 0;
+                    }
+                    beatSound.play().catch(e => console.log(`[ЗВУК] Ошибка BeatSound: ${e.message}`));
+                } else {
+                    const audio = new Audio(`assets/sounds/${soundFile}`);
+                    audio.volume = 0.6;
+                    audio.play().catch(e => console.log(`[ЗВУК] Ошибка: ${soundFile} - ${e.message}`));
+                }
+            } catch (e) {
+                console.log(`[ЗВУК] Исключение: ${soundFile} - ${e.message}`);
+            }
+        }
+
+        // Кнопка перехода на стартовый экран
+        document.getElementById('btn-next').addEventListener('click', () => {
+            playSound('StartSound.mp3');
+            switchScreen('screen_start');
+            setTimeout(() => {
+                switchScreen('screen_settings');
+            }, 3000);
+        });
+
+        // ========== ПЕРЕКЛЮЧАТЕЛИ НА ЭКРАНЕ НАСТРОЕК ==========
+        let fieldIndex = 0;
+        const fieldImages = ['field-last', 'field-straight-easy', 'field-straight-hard'];
+
+        function updateField() {
+            fieldImages.forEach((id, idx) => {
+                const img = document.getElementById(id);
+                if (img) {
+                    if (idx === fieldIndex) img.classList.remove('hidden');
+                    else img.classList.add('hidden');
+                }
+            });
+            playSound('TurnSwitchSound.mp3');
+        }
+        document.getElementById('btn-field-left').addEventListener('click', () => {
+            fieldIndex = (fieldIndex - 1 + fieldImages.length) % fieldImages.length;
+            updateField();
+        });
+        document.getElementById('btn-field-right').addEventListener('click', () => {
+            fieldIndex = (fieldIndex + 1) % fieldImages.length;
+            updateField();
+        });
+
+        let playerIndex = 0;
+        const playerImages = ['player-red', 'player-white', 'player-cases'];
+
+        function updatePlayer() {
+            playerImages.forEach((id, idx) => {
+                const img = document.getElementById(id);
+                if (img) {
+                    if (idx === playerIndex) img.classList.remove('hidden');
+                    else img.classList.add('hidden');
+                }
+            });
+            playSound('TurnSwitchSound.mp3');
+        }
+        document.getElementById('btn-player-left').addEventListener('click', () => {
+            playerIndex = (playerIndex - 1 + playerImages.length) % playerImages.length;
+            updatePlayer();
+        });
+        document.getElementById('btn-player-right').addEventListener('click', () => {
+            playerIndex = (playerIndex + 1) % playerImages.length;
+            updatePlayer();
+        });
+
+        let soundIndex = 0;
+        const soundImages = ['sound-on', 'sound-off'];
+
+        // ========== ПЕРЕКЛЮЧАТЕЛЬ КЛАССА ==========
+        let classIndex = 0; // 0 или 1
+        const classImages = ['class-1', 'class-2']; // пока только 2 класса
+        // const classImages = ['class-1', 'class-2', 'class-3', 'class-4', 'class-5']; // полный список (закомментирован)
+
+        // ========== ДАННЫЕ ДЛЯ ФОРМЫ СОГЛАСИЯ ==========
+        const CLASS_DATA = {
+            0: { // Класс 1 (индекс 0)
+                ru: { name: 'Классический', needAd: false },
+                en: { name: 'Classic', needAd: false }
+            },
+            1: { // Класс 2 (индекс 1)
+                ru: { name: 'Классический PRO', needAd: true },
+                en: { name: 'Classic PRO', needAd: true }
+            },
+            2: { // Класс 3 (индекс 2)
+                ru: { name: 'Битва на болотах', needAd: true },
+                en: { name: 'The Swamps', needAd: true }
+            },
+            3: { // Класс 4 (индекс 3)
+                ru: { name: 'Беспорядок', needAd: true },
+                en: { name: 'Mess', needAd: true }
+            },
+            4: { // Класс 5 (индекс 4)
+                ru: { name: 'Последний удар', needAd: true },
+                en: { name: 'The Last Hit', needAd: true }
+            }
+        };
+
+        // ========== ПОЛУЧЕНИЕ ТЕКСТА ДЛЯ ФОРМЫ СОГЛАСИЯ ==========
+        function getAgreementText() {
+            // Проверяем, какая кнопка языка сейчас скрыта
+            const isEnglish = document.getElementById('btn-lang-ru').classList.contains('hidden');
+            const lang = isEnglish ? 'en' : 'ru';
+            const classData = CLASS_DATA[classIndex];
+
+            if (!classData) {
+                return lang === 'en' ? 'Watch a short ad to access this mode.' : 'Посмотрите рекламный ролик для доступа к этому режиму.';
+            }
+
+            const className = classData[lang].name;
+
+            if (lang === 'ru') {
+                return `Чтобы получить доступ к режиму "${className}", посмотрите рекламный ролик.`;
+            } else {
+                return `To access "${className}" mode, watch a short ad.`;
+            }
+        }
+
+        function updateClass() {
+            classImages.forEach((id, idx) => {
+                const img = document.getElementById(id);
+                if (img) {
+                    if (idx === classIndex) img.classList.remove('hidden');
+                    else img.classList.add('hidden');
+                }
+            });
+            playSound('TurnSwitchSound.mp3');
+        }
+
+        document.getElementById('btn-class-left').addEventListener('click', () => {
+            classIndex = (classIndex - 1 + classImages.length) % classImages.length;
+            updateClass();
+        });
+
+        document.getElementById('btn-class-right').addEventListener('click', () => {
+            classIndex = (classIndex + 1) % classImages.length;
+            updateClass();
+        });
+
+        function updateSound() {
+            soundImages.forEach((id, idx) => {
+                const img = document.getElementById(id);
+                if (img) {
+                    if (idx === soundIndex) img.classList.remove('hidden');
+                    else img.classList.add('hidden');
+                }
+            });
+            isSoundEnabled = (soundIndex === 0);
+            playSound('TurnSwitchSound.mp3');
+        }
+        document.getElementById('btn-sound-left').addEventListener('click', () => {
+            soundIndex = (soundIndex - 1 + soundImages.length) % soundImages.length;
+            updateSound();
+        });
+        document.getElementById('btn-sound-right').addEventListener('click', () => {
+            soundIndex = (soundIndex + 1) % soundImages.length;
+            updateSound();
+        });
+
+        document.getElementById('btn-info').addEventListener('click', () => {
+            playSound('OpenNewFormSound.mp3');
+            switchScreen('screen_info');
+        });
+
+        document.getElementById('btn-to-score').addEventListener('click', () => {
+            playSound('OpenNewFormSound.mp3');
+            updateStatsDisplay();
+            switchScreen('screen_score');
+        });
+
+        // ----- ПЕРЕМЕННЫЕ ИГРЫ -----
+        let activeCollisions = 0;
+        let currentScale = 1;
+        let isGameActive = false;
+        let isComputerMode = false;
+        let isMasterMode = false; // true — режим "Высший класс" (без стрелки)
+        let computerDifficulty = 'hard';
+
+        let redLines = 0;
+        let whiteLines = 0;
+        let turnFlag = 1;
+        let lastRoundStarter = 'red';
+
+        function updateTurnIndicator() {
+            const turnRed = document.getElementById('turn-red');
+            const turnWhite = document.getElementById('turn-white');
+            if (turnFlag === 1) {
+                turnRed.classList.remove('hidden');
+                turnWhite.classList.add('hidden');
+            } else {
+                turnRed.classList.add('hidden');
+                turnWhite.classList.remove('hidden');
+            }
+        }
+
+        // ----- ПАРАМЕТРЫ ШАШЕК И ПОЛЯ -----
+        const STONE_SIZE = 75;
+        const FIELD_WIDTH = 800;
+        const FIELD_HEIGHT = 800;
+        const BORDER = 5;
+        const stonePositions = [-320, -222, -124, -26, 72, 170, 268, 365];
+
+        const START_RED_Y = FIELD_HEIGHT - BORDER - STONE_SIZE / 2 - 15;
+        const START_WHITE_Y = BORDER + STONE_SIZE / 2 + 15;
+
+        let currentRedY = START_RED_Y;
+        let currentWhiteY = START_WHITE_Y;
+
+        const LINE_HEIGHT = 98;
+        const MIN_RED_Y = START_RED_Y - (7 * LINE_HEIGHT);
+        const MAX_WHITE_Y = START_WHITE_Y + (7 * LINE_HEIGHT);
+
+        let isResettingRound = false;
+        let isComputerThinking = false;
+
+        // ----- ФИЗИЧЕСКИЕ ПАРАМЕТРЫ -----
+        const COLLISION_BOUNCE = 0.7;
+        const FRICTION_AIR = 0.98;
+        const FRICTION_GROUND = 0.996;
+        const STOP_SPEED = 0.5;
+
+        let stonesList = [];
+        let gameLoopId = null;
+        let isPhysicsRunning = false;
+
+        // ----- СДВИГ ПОЛЯ -----
+        let currentScrollPosition = 'center';
+
+        function updateScrollPosition() {
+            const scrollContainer = document.getElementById('game-scroll-container');
+            if (!scrollContainer) return;
+
+            let translateX = 0;
+            const containerWidth = scrollContainer.parentElement.clientWidth;
+            const fieldWidth = 800;
+
+            switch (currentScrollPosition) {
+                case 'left':
+                    translateX = -(containerWidth / 2 - fieldWidth / 2 - 10);
+                    break;
+                case 'center':
+                    translateX = 0;
+                    break;
+                case 'right':
+                    translateX = (containerWidth / 2 - fieldWidth / 2 - 10);
+                    break;
+            }
+
+            scrollContainer.style.transform = `translateX(${translateX}px)`;
+        }
+
+        // ========== КЛАСС ФИЗИЧЕСКОЙ ШАШКИ ==========
+        class PhysicsStone {
+            constructor(element, team, x, y) {
+                this.element = element;
+                this.team = team;
+                this.x = x;
+                this.y = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = STONE_SIZE / 2;
+                this.active = true;
+            }
+
+            applyImpulse(vx, vy) {
+                this.vx = vx;
+                this.vy = vy;
+            }
+
+            updatePosition() {
+                if (!this.active) return;
+                this.vx *= FRICTION_AIR * FRICTION_GROUND;
+                this.vy *= FRICTION_AIR * FRICTION_GROUND;
+                if (Math.abs(this.vx) < STOP_SPEED && Math.abs(this.vy) < STOP_SPEED) {
+                    this.vx = 0;
+                    this.vy = 0;
+                }
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.isOutOfBounds()) {
+                    this.active = false;
+                    this.element.style.display = 'none';
+                    console.log(`${this.team} шашка вылетела`);
+                    updateScores();
+                    return;
+                }
+
+                this.element.style.left = `${this.x - this.radius}px`;
+                this.element.style.top = `${this.y - this.radius}px`;
+            }
+
+            isOutOfBounds() {
+                const leftBound = BORDER;
+                const rightBound = FIELD_WIDTH - BORDER;
+                const topBound = BORDER;
+                const bottomBound = FIELD_HEIGHT - BORDER;
+                return (this.x < leftBound || this.x > rightBound || this.y < topBound || this.y > bottomBound);
+            }
+        }
+
+        function handleCollision(s1, s2) {
+            if (!s1.active || !s2.active) return;
+            const dx = s1.x - s2.x;
+            const dy = s1.y - s2.y;
+            const distance = Math.hypot(dx, dy);
+            const minDist = s1.radius + s2.radius;
+
+            if (distance < minDist) {
+                if (distance > 1) {
+                    console.log(`[СТОЛКНОВЕНИЕ] ${s1.team} и ${s2.team}, расстояние: ${distance.toFixed(2)}`);
+                    playSound('BeatSound.mp3');
+                }
+
+                const angle = Math.atan2(dy, dx);
+                const overlap = minDist - distance;
+                const moveX = Math.cos(angle) * overlap * 0.5;
+                const moveY = Math.sin(angle) * overlap * 0.5;
+                s1.x += moveX;
+                s1.y += moveY;
+                s2.x -= moveX;
+                s2.y -= moveY;
+                s1.element.style.left = `${s1.x - s1.radius}px`;
+                s1.element.style.top = `${s1.y - s1.radius}px`;
+                s2.element.style.left = `${s2.x - s2.radius}px`;
+                s2.element.style.top = `${s2.y - s2.radius}px`;
+                const nx = dx / distance;
+                const ny = dy / distance;
+                const vrelx = s1.vx - s2.vx;
+                const vrely = s1.vy - s2.vy;
+                const imp = (1 + COLLISION_BOUNCE) * (vrelx * nx + vrely * ny) / 2;
+                s1.vx -= imp * nx;
+                s1.vy -= imp * ny;
+                s2.vx += imp * nx;
+                s2.vy += imp * ny;
+            }
+        }
+
+        function updateScores() {
+            let redOnField = 0,
+                whiteOnField = 0,
+                redDead = 0,
+                whiteDead = 0;
+            stonesList.forEach(stone => {
+                if (stone.team === 'red') {
+                    if (stone.active) redOnField++;
+                    else redDead++;
+                } else {
+                    if (stone.active) whiteOnField++;
+                    else whiteDead++;
+                }
+            });
+            const redScoreElem = document.getElementById('red-score');
+            const whiteScoreElem = document.getElementById('white-score');
+            if (redScoreElem) redScoreElem.textContent = `${redOnField}/${redDead}`;
+            if (whiteScoreElem) whiteScoreElem.textContent = `${whiteOnField}/${whiteDead}`;
+        }
+
+        function placeStonesWithOffset(redY, whiteY) {
+            const container = document.getElementById('stones-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const centerX = FIELD_WIDTH / 2 - STONE_SIZE / 4;
+            stonePositions.forEach(offsetX => {
+                container.appendChild(createStone('red', centerX + offsetX, redY));
+            });
+            stonePositions.forEach(offsetX => {
+                container.appendChild(createStone('white', centerX + offsetX, whiteY));
+            });
+            initPhysics();
+            updateScores();
+        }
+
+        function initPhysics() {
+            stonesList = [];
+            const stones = document.querySelectorAll('#stones-container .stone');
+            stones.forEach(stone => {
+                const x = parseFloat(stone.style.left) + STONE_SIZE / 2;
+                const y = parseFloat(stone.style.top) + STONE_SIZE / 2;
+                const team = stone.dataset.team;
+                stonesList.push(new PhysicsStone(stone, team, x, y));
+            });
+            updateScores();
+        }
+
+        async function updatePhysics() {
+            for (let stone of stonesList) stone.updatePosition();
+            for (let i = 0; i < stonesList.length; i++)
+                for (let j = i + 1; j < stonesList.length; j++)
+                    handleCollision(stonesList[i], stonesList[j]);
+
+            let allStopped = true;
+            for (let stone of stonesList) {
+                if (stone.active && (Math.abs(stone.vx) > STOP_SPEED || Math.abs(stone.vy) > STOP_SPEED)) {
+                    allStopped = false;
+                    break;
+                }
+            }
+
+            if (allStopped && isPhysicsRunning) {
+                if (gameLoopId) {
+                    cancelAnimationFrame(gameLoopId);
+                    gameLoopId = null;
+                }
+                isPhysicsRunning = false;
+                console.log('Все шашки остановились');
+
+                let redActive = false,
+                    whiteActive = false;
+                for (let stone of stonesList) {
+                    if (stone.active) {
+                        if (stone.team === 'red') redActive = true;
+                        else whiteActive = true;
+                    }
+                }
+
+                if ((redActive && !whiteActive) || (!redActive && whiteActive) || (!redActive && !whiteActive)) {
+
+                    let winner = null;
+                    if (redActive && !whiteActive) winner = 'red';
+                    else if (!redActive && whiteActive) winner = 'white';
+                    else if (!redActive && !whiteActive) winner = 'draw';
+
+                    console.log(`Раунд окончен! Победитель: ${winner}`);
+
+                    if (winner === 'draw') {
+                        console.log('НИЧЬЯ — перезапускаем раунд');
+                        playSound('DrawRound.mp3');
+                        placeStonesWithOffset(currentRedY, currentWhiteY);
+                        turnFlag = (lastRoundStarter === 'red') ? 1 : 0;
+                        updateTurnIndicator();
+
+                        setTimeout(() => {
+                            if (isComputerMode && turnFlag === 0 && !isComputerThinking && isGameActive) {
+                                console.log('Компьютер делает ход после ничьей');
+                                if (computerDifficulty === 'easy') {
+                                    makeComputerMoveEasy();
+                                } else {
+                                    makeComputerMoveHard();
+                                }
+                            }
+                        }, 100);
+
+                        await checkAndShowAd();
+
+                    } else if (winner === 'red') {
+                        currentRedY -= LINE_HEIGHT;
+                        redLines++;
+                        if (currentWhiteY > START_WHITE_Y) {
+                            currentWhiteY -= LINE_HEIGHT;
+                            whiteLines--;
+                        }
+                        turnFlag = 0;
+                        lastRoundStarter = 'white';
+                        updateTurnIndicator();
+
+                        currentRedY = Math.max(MIN_RED_Y, Math.min(START_RED_Y, currentRedY));
+                        currentWhiteY = Math.max(START_WHITE_Y, Math.min(MAX_WHITE_Y, currentWhiteY));
+
+                        if (redLines >= 7) {
+                            await addGameResult(true, window._currentClassName, window._currentModeName);
+                            playSound('WinSound.mp3');
+                            setTimeout(() => switchScreen('screen_final_win'), 2000);
+                            return;
+                        }
+
+                        playSound('EndRoundSound.mp3');
+                        placeStonesWithOffset(currentRedY, currentWhiteY);
+
+                        setTimeout(() => {
+                            if (isComputerMode && turnFlag === 0 && !isComputerThinking && isGameActive) {
+                                console.log('Компьютер делает ход после победы красных');
+                                if (computerDifficulty === 'easy') {
+                                    makeComputerMoveEasy();
+                                } else {
+                                    makeComputerMoveHard();
+                                }
+                            }
+                        }, 100);
+
+                        await checkAndShowAd();
+
+                    } else if (winner === 'white') {
+                        currentWhiteY += LINE_HEIGHT;
+                        whiteLines++;
+                        if (currentRedY < START_RED_Y) {
+                            currentRedY += LINE_HEIGHT;
+                            redLines--;
+                        }
+                        turnFlag = 1;
+                        lastRoundStarter = 'red';
+                        updateTurnIndicator();
+
+                        currentRedY = Math.max(MIN_RED_Y, Math.min(START_RED_Y, currentRedY));
+                        currentWhiteY = Math.max(START_WHITE_Y, Math.min(MAX_WHITE_Y, currentWhiteY));
+
+                        if (whiteLines >= 7) {
+                            await addGameResult(false, window._currentClassName, window._currentModeName);
+                            playSound('LoseSound.mp3');
+                            setTimeout(() => switchScreen('screen_final_lost'), 2000);
+                            return;
+                        }
+
+                        playSound('EndRoundSound.mp3');
+                        placeStonesWithOffset(currentRedY, currentWhiteY);
+
+                        await checkAndShowAd();
+                    }
+
+                    setTimeout(() => {
+                        isResettingRound = false;
+                    }, 100);
+                } else {
+                    console.log('Нет победителя, продолжаем игру');
+                    if (isComputerMode && turnFlag === 0 && !isComputerThinking && isGameActive) {
+                        console.log('Компьютер делает ход');
+                        if (computerDifficulty === 'easy') {
+                            makeComputerMoveEasy();
+                        } else {
+                            makeComputerMoveHard();
+                        }
+                    }
+                }
+            }
+        }
+
+        function startPhysics() {
+            console.log('🔥 startPhysics() ВЫЗВАН');
+            console.log('  - isGameActive ДО:', isGameActive);
+            console.log('  - isPhysicsRunning ДО:', isPhysicsRunning);
+            console.log('  - gameLoopId ДО:', gameLoopId);
+
+            if (gameLoopId) {
+                console.log('  - Отменяем старый gameLoopId');
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+
+            console.log("startPhysics вызван");
+            isPhysicsRunning = true;
+            isGameActive = true;
+            console.log('  - isGameActive ПОСЛЕ:', isGameActive);
+            console.log('  - isPhysicsRunning ПОСЛЕ:', isPhysicsRunning);
+
+            async function loop() {
+                if (!isGameActive) {
+                    console.log('⏸️ Цикл физики остановлен (isGameActive === false)');
+                    return;
+                }
+                await updatePhysics();
+                gameLoopId = requestAnimationFrame(loop);
+            }
+
+            gameLoopId = requestAnimationFrame(loop);
+            console.log('  - gameLoopId ПОСЛЕ:', gameLoopId);
+            console.log('🔥 startPhysics() ЗАВЕРШЁН');
+        }
+
+        function stopPhysics() {
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+            isPhysicsRunning = false;
+            isGameActive = false;
+        }
+
+        // ========== ФУНКЦИИ МОДАЛЬНОГО ОКНА ==========
+        function showAgreementForm() {
+            const textElement = document.getElementById('agreement-text');
+            if (textElement) {
+                textElement.textContent = getAgreementText();
+            }
+            document.getElementById('agreement-overlay').classList.add('active');
+        }
+
+        function hideAgreementForm() {
+            document.getElementById('agreement-overlay').classList.remove('active');
+        }
+
+        // ========== РЕКЛАМА ЗА ВОЗНАГРАЖДЕНИЕ ==========
+        function watchRewardAd() {
+            console.log('🎬 Запрос рекламы за вознаграждение...');
+
+            // Показываем сообщение о загрузке
+            const textElement = document.getElementById('agreement-text');
+            if (textElement) {
+                const originalText = textElement.textContent;
+                textElement.textContent = '⏳ Загрузка рекламы...';
+                // Можно вернуть текст через 5 секунд, если что-то пошло не так
+                setTimeout(() => {
+                    if (textElement.textContent === '⏳ Загрузка рекламы...') {
+                        textElement.textContent = originalText;
+                    }
+                }, 5000);
+            }
+
+            // Проверяем, доступен ли VK Bridge
+            if (typeof vkBridge === 'undefined' || !vkBridge || !isVKBridgeReady) {
+                console.warn('⚠️ VK Bridge не доступен, запускаем без рекламы (тестовый режим)');
+                // В тестовом режиме просто запускаем игру
+                startGame();
+                return;
+            }
+
+            // Шаг 1: Проверяем, есть ли реклама для показа
+            vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'reward' })
+                .then((data) => {
+                    console.log('📊 Проверка рекламы:', data);
+
+                    if (data.result) {
+                        // Шаг 2: Реклама есть — показываем её
+                        console.log('📺 Показ рекламы...');
+                        return vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
+                    } else {
+                        console.log('⚠️ Рекламные материалы не найдены');
+                        // Реклама не готова — запускаем игру без рекламы (или показываем сообщение)
+                        alert('Реклама временно недоступна, попробуйте позже.');
+                        return null;
+                    }
+                })
+                .then((result) => {
+                    if (result && result.result) {
+                        console.log('✅ Реклама просмотрена! Запускаем игру.');
+                        // Реклама успешно показана — запускаем игру
+                        startGame();
+                    } else if (result === null) {
+                        // Уже обработано выше
+                    } else {
+                        console.log('❌ Реклама не была показана');
+                        alert('Реклама не была показана, попробуйте ещё раз.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('❌ Ошибка при работе с рекламой:', error);
+                    // Если ошибка — всё равно запускаем игру (или показываем сообщение)
+                    alert('Произошла ошибка при загрузке рекламы. Попробуйте позже.');
+                });
+        }
+
+        // ========== ЛЁГКИЙ ХОД КОМПЬЮТЕРА ==========
+        function makeComputerMoveEasy() {
+            if (!isComputerMode) return;
+            if (isResettingRound) return;
+            if (turnFlag !== 0) return;
+            if (isComputerThinking) return;
+            if (!isGameActive) return;
+
+            let whiteStones = stonesList.filter(s => s.team === 'white' && s.active);
+            if (whiteStones.length === 0) {
+                console.log("У компьютера нет шашек для хода");
+                return;
+            }
+
+            let redStones = stonesList.filter(s => s.team === 'red' && s.active);
+            if (redStones.length === 0) {
+                console.log("Нет красных шашек");
+                return;
+            }
+
+            isComputerThinking = true;
+            console.log("🎯 Компьютер (легкий уровень) стреляет случайными углами...");
+
+            let bestScore = -Infinity;
+            let bestMove = null;
+
+            const angles = [];
+            for (let deg = 0; deg < 360; deg += 30) {
+                angles.push(deg * Math.PI / 180);
+            }
+
+            const powers = [];
+            for (let p = 8; p <= 28; p += 5) {
+                powers.push(p);
+            }
+
+            function deepSimulateShot(stone, angleRad, power) {
+                let simStones = [];
+                for (let s of stonesList) {
+                    simStones.push({
+                        team: s.team,
+                        x: s.x,
+                        y: s.y,
+                        vx: s.vx,
+                        vy: s.vy,
+                        radius: s.radius,
+                        active: s.active
+                    });
+                }
+
+                let simStone = simStones.find((s, idx) => {
+                    const originalStone = stonesList[idx];
+                    return originalStone.element === stone.element;
+                });
+                if (!simStone || !simStone.active) return { redDead: 0, whiteDead: 0 };
+
+                let velX = Math.cos(angleRad) * power;
+                let velY = Math.sin(angleRad) * power;
+                simStone.vx = velX;
+                simStone.vy = velY;
+
+                const FRICTION_AIR_SIM = 0.98;
+                const FRICTION_GROUND_SIM = 0.996;
+                const STOP_SPEED_SIM = 0.5;
+                const COLLISION_BOUNCE_SIM = 0.7;
+
+                function isOutOfBounds(stone) {
+                    const leftBound = BORDER;
+                    const rightBound = FIELD_WIDTH - BORDER;
+                    const topBound = BORDER;
+                    const bottomBound = FIELD_HEIGHT - BORDER;
+                    return (stone.x < leftBound || stone.x > rightBound || stone.y < topBound || stone.y > bottomBound);
+                }
+
+                function handleCollisionSim(s1, s2) {
+                    if (!s1.active || !s2.active) return;
+                    const dx = s1.x - s2.x;
+                    const dy = s1.y - s2.y;
+                    const distance = Math.hypot(dx, dy);
+                    const minDist = s1.radius + s2.radius;
+                    if (distance < minDist) {
+                        const angle = Math.atan2(dy, dx);
+                        const overlap = minDist - distance;
+                        const moveX = Math.cos(angle) * overlap * 0.5;
+                        const moveY = Math.sin(angle) * overlap * 0.5;
+                        s1.x += moveX;
+                        s1.y += moveY;
+                        s2.x -= moveX;
+                        s2.y -= moveY;
+                        const nx = dx / distance;
+                        const ny = dy / distance;
+                        const vrelx = s1.vx - s2.vx;
+                        const vrely = s1.vy - s2.vy;
+                        const imp = (1 + COLLISION_BOUNCE_SIM) * (vrelx * nx + vrely * ny) / 2;
+                        s1.vx -= imp * nx;
+                        s1.vy -= imp * ny;
+                        s2.vx += imp * nx;
+                        s2.vy += imp * ny;
+                    }
+                }
+
+                let redDead = 0;
+                let whiteDead = 0;
+
+                for (let step = 0; step < 2000; step++) {
+                    for (let s of simStones) {
+                        if (!s.active) continue;
+                        s.vx *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
+                        s.vy *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
+                        if (Math.abs(s.vx) < STOP_SPEED_SIM && Math.abs(s.vy) < STOP_SPEED_SIM) {
+                            s.vx = 0;
+                            s.vy = 0;
+                        }
+                        s.x += s.vx;
+                        s.y += s.vy;
+
+                        if (isOutOfBounds(s)) {
+                            s.active = false;
+                            if (s.team === 'red') redDead++;
+                            else if (s.team === 'white') whiteDead++;
+                            continue;
+                        }
+                    }
+
+                    for (let i = 0; i < simStones.length; i++) {
+                        for (let j = i + 1; j < simStones.length; j++) {
+                            handleCollisionSim(simStones[i], simStones[j]);
+                        }
+                    }
+
+                    let allStopped = true;
+                    for (let s of simStones) {
+                        if (s.active && (Math.abs(s.vx) > STOP_SPEED_SIM || Math.abs(s.vy) > STOP_SPEED_SIM)) {
+                            allStopped = false;
+                            break;
+                        }
+                    }
+                    if (allStopped) break;
+                }
+
+                return { redDead, whiteDead };
+            }
+
+            for (let stone of whiteStones) {
+                for (let angle of angles) {
+                    for (let power of powers) {
+                        const result = deepSimulateShot(stone, angle, power);
+                        const redDead = result.redDead;
+                        const whiteDead = result.whiteDead;
+
+                        let score = (redDead * 100) - (whiteDead * 80);
+
+                        if (redDead === 0 && whiteStones.length > 1) {
+                            score -= 30;
+                        }
+
+                        if (whiteStones.length === 1) {
+                            if (redDead > 0) {
+                                score += redDead * 500;
+                            } else {
+                                score -= 200;
+                            }
+                        }
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestMove = { stone: stone, angle: angle, power: power };
+                        }
+                    }
+                }
+            }
+
+            let selectedStone, selectedAngle, selectedPower;
+
+            if (bestMove && bestScore > -Infinity) {
+                selectedStone = bestMove.stone;
+                selectedAngle = bestMove.angle;
+                selectedPower = bestMove.power;
+                console.log(`💻 Компьютер (легкий): сила ${selectedPower.toFixed(1)}`);
+            } else {
+                selectedStone = whiteStones[Math.floor(Math.random() * whiteStones.length)];
+                selectedAngle = Math.random() * 2 * Math.PI;
+                selectedPower = 10 + Math.random() * 15;
+                console.log("⚠️ Резервный ход");
+            }
+
+            let velX = Math.cos(selectedAngle) * selectedPower;
+            let velY = Math.sin(selectedAngle) * selectedPower;
+            selectedStone.applyImpulse(velX, velY);
+
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+
+            startPhysics();
+            turnFlag = 1;
+            updateTurnIndicator();
+            console.log(`Компьютер выстрелил. Ход красных`);
+
+            isComputerThinking = false;
+        }
+
+        // ========== СЛОЖНЫЙ ХОД КОМПЬЮТЕРА ==========
+        function makeComputerMoveHard() {
+            if (!isComputerMode) return;
+            if (isResettingRound) return;
+            if (turnFlag !== 0) return;
+            if (isComputerThinking) return;
+            if (!isGameActive) return;
+
+            let whiteStones = stonesList.filter(s => s.team === 'white' && s.active);
+            if (whiteStones.length === 0) {
+                console.log("У компьютера нет шашек для хода");
+                return;
+            }
+
+            let redStones = stonesList.filter(s => s.team === 'red' && s.active);
+            if (redStones.length === 0) {
+                console.log("Нет красных шашек");
+                return;
+            }
+
+            isComputerThinking = true;
+            console.log("🎯 Компьютер (сложный уровень) прицеливается со случайным шумом...");
+
+            const RADIUS = STONE_SIZE / 2;
+            const OFFSETS = [
+                { name: 'центр', baseX: 0, baseY: 0 },
+                { name: 'левый край', baseX: -RADIUS * 0.8, baseY: 0 },
+                { name: 'правый край', baseX: RADIUS * 0.8, baseY: 0 }
+            ];
+
+            const powers = [];
+            for (let p = 10; p <= 28; p += 6) {
+                powers.push(p);
+            }
+
+            let topMoves = [];
+            const TOP_MOVES_COUNT = 4;
+
+            function calculateAimAngle(whiteStone, targetX, targetY) {
+                const dx = targetX - whiteStone.x;
+                const dy = targetY - whiteStone.y;
+                return Math.atan2(dy, dx);
+            }
+
+            function deepSimulateShot(stone, angleRad, power) {
+                let simStones = [];
+                for (let s of stonesList) {
+                    simStones.push({
+                        team: s.team,
+                        x: s.x,
+                        y: s.y,
+                        vx: s.vx,
+                        vy: s.vy,
+                        radius: s.radius,
+                        active: s.active
+                    });
+                }
+
+                let simStone = simStones.find((s, idx) => {
+                    const originalStone = stonesList[idx];
+                    return originalStone.element === stone.element;
+                });
+                if (!simStone || !simStone.active) return { redDead: 0, whiteDead: 0 };
+
+                let velX = Math.cos(angleRad) * power;
+                let velY = Math.sin(angleRad) * power;
+                simStone.vx = velX;
+                simStone.vy = velY;
+
+                const FRICTION_AIR_SIM = 0.98;
+                const FRICTION_GROUND_SIM = 0.996;
+                const STOP_SPEED_SIM = 0.5;
+                const COLLISION_BOUNCE_SIM = 0.7;
+
+                function isOutOfBounds(stone) {
+                    const leftBound = BORDER;
+                    const rightBound = FIELD_WIDTH - BORDER;
+                    const topBound = BORDER;
+                    const bottomBound = FIELD_HEIGHT - BORDER;
+                    return (stone.x < leftBound || stone.x > rightBound || stone.y < topBound || stone.y > bottomBound);
+                }
+
+                function handleCollisionSim(s1, s2) {
+                    if (!s1.active || !s2.active) return;
+                    const dx = s1.x - s2.x;
+                    const dy = s1.y - s2.y;
+                    const distance = Math.hypot(dx, dy);
+                    const minDist = s1.radius + s2.radius;
+                    if (distance < minDist) {
+                        const angle = Math.atan2(dy, dx);
+                        const overlap = minDist - distance;
+                        const moveX = Math.cos(angle) * overlap * 0.5;
+                        const moveY = Math.sin(angle) * overlap * 0.5;
+                        s1.x += moveX;
+                        s1.y += moveY;
+                        s2.x -= moveX;
+                        s2.y -= moveY;
+                        const nx = dx / distance;
+                        const ny = dy / distance;
+                        const vrelx = s1.vx - s2.vx;
+                        const vrely = s1.vy - s2.vy;
+                        const imp = (1 + COLLISION_BOUNCE_SIM) * (vrelx * nx + vrely * ny) / 2;
+                        s1.vx -= imp * nx;
+                        s1.vy -= imp * ny;
+                        s2.vx += imp * nx;
+                        s2.vy += imp * ny;
+                    }
+                }
+
+                let redDead = 0;
+                let whiteDead = 0;
+
+                for (let step = 0; step < 2000; step++) {
+                    for (let s of simStones) {
+                        if (!s.active) continue;
+                        s.vx *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
+                        s.vy *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
+                        if (Math.abs(s.vx) < STOP_SPEED_SIM && Math.abs(s.vy) < STOP_SPEED_SIM) {
+                            s.vx = 0;
+                            s.vy = 0;
+                        }
+                        s.x += s.vx;
+                        s.y += s.vy;
+
+                        if (isOutOfBounds(s)) {
+                            s.active = false;
+                            if (s.team === 'red') redDead++;
+                            else if (s.team === 'white') whiteDead++;
+                            continue;
+                        }
+                    }
+
+                    for (let i = 0; i < simStones.length; i++) {
+                        for (let j = i + 1; j < simStones.length; j++) {
+                            handleCollisionSim(simStones[i], simStones[j]);
+                        }
+                    }
+
+                    let allStopped = true;
+                    for (let s of simStones) {
+                        if (s.active && (Math.abs(s.vx) > STOP_SPEED_SIM || Math.abs(s.vy) > STOP_SPEED_SIM)) {
+                            allStopped = false;
+                            break;
+                        }
+                    }
+                    if (allStopped) break;
+                }
+
+                return { redDead, whiteDead };
+            }
+
+            for (let stone of whiteStones) {
+                for (let red of redStones) {
+                    for (let offset of OFFSETS) {
+                        const randomNoiseX = (Math.random() - 0.5) * 50;
+                        const randomNoiseY = (Math.random() - 0.5) * 50;
+                        const targetX = red.x + offset.baseX + randomNoiseX;
+                        const targetY = red.y + offset.baseY + randomNoiseY;
+
+                        for (let power of powers) {
+                            const noisyPower = power + (Math.random() - 0.5) * 14;
+                            const finalPower = Math.max(8, Math.min(28, noisyPower));
+                            const angle = calculateAimAngle(stone, targetX, targetY);
+                            const result = deepSimulateShot(stone, angle, finalPower);
+                            const redDead = result.redDead;
+                            const whiteDead = result.whiteDead;
+
+                            let score = (redDead * 100) - (whiteDead * 80);
+
+                            if (redDead === 0 && whiteStones.length > 1) {
+                                score -= 30;
+                            }
+
+                            if (whiteStones.length === 1) {
+                                if (redDead > 0) {
+                                    score += redDead * 500;
+                                } else {
+                                    score -= 200;
+                                }
+                            }
+
+                            if (topMoves.length < TOP_MOVES_COUNT) {
+                                topMoves.push({ stone: stone, angle: angle, power: finalPower, score: score });
+                                topMoves.sort((a, b) => b.score - a.score);
+                            } else if (score > topMoves[topMoves.length - 1].score) {
+                                topMoves.pop();
+                                topMoves.push({ stone: stone, angle: angle, power: finalPower, score: score });
+                                topMoves.sort((a, b) => b.score - a.score);
+                            }
+                        }
+                    }
+                }
+            }
+
+            let selectedStone, selectedAngle, selectedPower;
+
+            if (topMoves.length > 0) {
+                const randomIndex = Math.floor(Math.random() * topMoves.length);
+                const selectedMove = topMoves[randomIndex];
+                selectedStone = selectedMove.stone;
+                selectedAngle = selectedMove.angle;
+                selectedPower = selectedMove.power;
+                console.log(`💻 Компьютер (сложный): выбрал ход из ${topMoves.length} лучших (сила ${selectedPower.toFixed(1)})`);
+            } else {
+                selectedStone = whiteStones[Math.floor(Math.random() * whiteStones.length)];
+                selectedAngle = Math.random() * 2 * Math.PI;
+                selectedPower = 10 + Math.random() * 15;
+                console.log("⚠️ Резервный ход");
+            }
+
+            let velX = Math.cos(selectedAngle) * selectedPower;
+            let velY = Math.sin(selectedAngle) * selectedPower;
+            selectedStone.applyImpulse(velX, velY);
+
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+
+            startPhysics();
+            turnFlag = 1;
+            updateTurnIndicator();
+            console.log(`Компьютер выстрелил. Ход красных`);
+
+            isComputerThinking = false;
+        }
+
+        // ========== ПРИЦЕЛ И ВЫСТРЕЛ ИГРОКА ==========
+        let isDragging = false;
+        let selectedStone = null;
+        let dragStartX = 0,
+            dragStartY = 0;
+        let aimLine = null;
+        let currentStone = null;
+
+        function createAimLine(x, y, angle, length, stoneWidth) {
+
+            if (isMasterMode) {
+                // В режиме "Высший класс" — не показываем стрелку
+                return;
+            }
+
+            if (aimLine) aimLine.remove();
+            const container = document.getElementById('game-board-container');
+            if (!container) return;
+
+            const scaledX = x / currentScale;
+            const scaledY = y / currentScale;
+            const scaledLength = length / currentScale;
+            const startWidth = stoneWidth;
+
+            const canvas = document.createElement('canvas');
+            canvas.classList.add('aim-line');
+            const lineLength = Math.min(400, Math.max(50, scaledLength));
+
+            canvas.width = lineLength;
+            canvas.height = startWidth;
+
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, '#ff0000');
+            gradient.addColorStop(1, '#ff8888');
+
+            const baseWidth = startWidth * 0.9;
+
+            ctx.beginPath();
+            ctx.moveTo(0, startWidth / 2 - baseWidth / 2);
+            ctx.lineTo(canvas.width, startWidth / 2 - 2);
+            ctx.lineTo(canvas.width, startWidth / 2 + 2);
+            ctx.lineTo(0, startWidth / 2 + baseWidth / 2);
+            ctx.closePath();
+
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            canvas.style.position = 'absolute';
+            canvas.style.left = `${scaledX}px`;
+            canvas.style.top = `${scaledY - startWidth / 2}px`;
+            canvas.style.transform = `rotate(${angle}rad)`;
+            canvas.style.transformOrigin = `0px ${startWidth / 2}px`;
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '100';
+
+            container.appendChild(canvas);
+            aimLine = canvas;
+        }
+
+        function removeAimLine() {
+            if (aimLine) {
+                aimLine.remove();
+                aimLine = null;
+            }
+        }
+
+        function onStoneMouseDown(event, stoneElement) {
+            console.log('🖱️ onStoneMouseDown() ВЫЗВАН');
+            console.log('  - isGameActive:', isGameActive);
+            console.log('  - isResettingRound:', isResettingRound);
+            console.log('  - turnFlag:', turnFlag);
+            console.log('  - stoneTeam:', stoneElement.dataset.team);
+
+            event.preventDefault();
+            event.stopPropagation();
+            if (!isGameActive) {
+                console.log('  ❌ isGameActive === false, захват запрещён');
+                return;
+            }
+            if (isResettingRound) {
+                console.log('  ❌ isResettingRound === true, захват запрещён');
+                return;
+            }
+
+            const stoneTeam = stoneElement.dataset.team;
+            if ((turnFlag === 1 && stoneTeam !== 'red') || (turnFlag === 0 && stoneTeam !== 'white')) {
+                console.log(`  ❌ Сейчас ход ${turnFlag === 1 ? 'красных' : 'белых'}, а вы пытаетесь захватить ${stoneTeam}`);
+                return;
+            }
+
+            console.log('  ✅ Захват разрешён, начинаем перетаскивание');
+
+            stoneElement.classList.add('selected');
+
+            isDragging = true;
+            selectedStone = stoneElement;
+            currentStone = stoneElement;
+            const containerRect = document.getElementById('game-board-container').getBoundingClientRect();
+            const stoneRect = stoneElement.getBoundingClientRect();
+            dragStartX = stoneRect.left + stoneRect.width / 2 - containerRect.left;
+            dragStartY = stoneRect.top + stoneRect.height / 2 - containerRect.top;
+            console.log('🖱️ Захват шашки');
+        }
+
+        function onGlobalMouseMove(event) {
+            if (!isGameActive) return;
+            if (!isDragging || !selectedStone) return;
+
+            // В режиме "Высший класс" — не обновляем стрелку
+            if (isMasterMode) {
+                return;
+            }
+
+            event.preventDefault();
+            const containerRect = document.getElementById('game-board-container').getBoundingClientRect();
+            let clientX, clientY;
+            if (event.touches) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+            const currentX = clientX - containerRect.left;
+            const currentY = clientY - containerRect.top;
+            const dx = currentX - dragStartX;
+            const dy = currentY - dragStartY;
+            const MAX_ARROW_LENGTH = 150;
+            let distance = Math.hypot(dx, dy);
+            if (distance > MAX_ARROW_LENGTH) distance = MAX_ARROW_LENGTH;
+            let angle = Math.atan2(dy, dx);
+            angle += Math.PI;
+            createAimLine(dragStartX, dragStartY, angle, distance * 2, STONE_SIZE);
+        }
+
+        function onGlobalMouseUp(event) {
+            if (!isGameActive) {
+                removeAimLine();
+                isDragging = false;
+                selectedStone = null;
+                return;
+            }
+            if (!isDragging || !selectedStone) {
+                removeAimLine();
+                isDragging = false;
+                selectedStone = null;
+                return;
+            }
+            event.preventDefault();
+
+            // Убираем обводку со всех шашек
+            document.querySelectorAll('.stone.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            const stoneTeam = selectedStone.dataset.team;
+            if ((turnFlag === 1 && stoneTeam !== 'red') || (turnFlag === 0 && stoneTeam !== 'white')) {
+                removeAimLine();
+                isDragging = false;
+                selectedStone = null;
+                return;
+            }
+
+            const containerRect = document.getElementById('game-board-container').getBoundingClientRect();
+            let clientX, clientY;
+            if (event.changedTouches) {
+                clientX = event.changedTouches[0].clientX;
+                clientY = event.changedTouches[0].clientY;
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+            const currentX = clientX - containerRect.left;
+            const currentY = clientY - containerRect.top;
+            const dx = currentX - dragStartX;
+            const dy = currentY - dragStartY;
+
+            console.log(`DEBUG: currentScale = ${currentScale}`);
+            let rawDistance = Math.hypot(dx, dy);
+            console.log(`DEBUG: rawDistance = ${rawDistance}`);
+
+            const MAX_ARROW_LENGTH_SCALED = 150 * currentScale;
+            const MIN_DISTANCE_SCALED = 10 * currentScale;
+
+            console.log(`DEBUG: MAX_ARROW_LENGTH_SCALED = ${MAX_ARROW_LENGTH_SCALED}`);
+
+            if (rawDistance < MIN_DISTANCE_SCALED) {
+                removeAimLine();
+                isDragging = false;
+                selectedStone = null;
+                return;
+            }
+
+            let distance = Math.min(MAX_ARROW_LENGTH_SCALED, rawDistance);
+            let power = 4 + (distance / MAX_ARROW_LENGTH_SCALED) * 27;
+
+            console.log(`[ВЫСТРЕЛ] Длина линии: ${distance.toFixed(2)}px, Сила удара: ${power.toFixed(2)}`);
+            console.log(`DEBUG: power = ${power}`);
+
+            if (power > 3.5) {
+                const angle = Math.atan2(dy, dx);
+                const velocityX = -Math.cos(angle) * power;
+                const velocityY = -Math.sin(angle) * power;
+                const stoneObj = stonesList.find(s => s.element === selectedStone);
+                if (stoneObj && stoneObj.active) {
+                    stoneObj.applyImpulse(velocityX, velocityY);
+                    startPhysics();
+                    console.log(`Выстрел! Сила: ${power.toFixed(2)}`);
+                    turnFlag = turnFlag === 1 ? 0 : 1;
+                    updateTurnIndicator();
+                }
+            }
+
+            // Убираем обводку со всех шашек
+            document.querySelectorAll('.stone.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            removeAimLine();
+            isDragging = false;
+            selectedStone = null;
+        }
+
+        function createStone(team, x, y) {
+            const stoneDiv = document.createElement('div');
+            stoneDiv.className = 'stone';
+            stoneDiv.style.width = `${STONE_SIZE}px`;
+            stoneDiv.style.height = `${STONE_SIZE}px`;
+            stoneDiv.style.left = `${x - STONE_SIZE / 2}px`;
+            stoneDiv.style.top = `${y - STONE_SIZE / 2}px`;
+            const img = document.createElement('img');
+            img.src = `assets/images/${team === 'red' ? 'Shashka_red.png' : 'Shashka_white.png'}`;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.display = 'block';
+            stoneDiv.appendChild(img);
+            stoneDiv.dataset.team = team;
+            stoneDiv.addEventListener('mousedown', (e) => onStoneMouseDown(e, stoneDiv));
+            stoneDiv.addEventListener('touchstart', (e) => onStoneMouseDown(e, stoneDiv));
+            return stoneDiv;
+        }
+
+        function placeStones() {
+            const container = document.getElementById('stones-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const centerX = FIELD_WIDTH / 2 - STONE_SIZE / 4;
+            stonePositions.forEach(offsetX => {
+                container.appendChild(createStone('red', centerX + offsetX, currentRedY));
+            });
+            stonePositions.forEach(offsetX => {
+                container.appendChild(createStone('white', centerX + offsetX, currentWhiteY));
+            });
+            updateScores();
+        }
+
+        window.addEventListener('mousemove', onGlobalMouseMove);
+        window.addEventListener('mouseup', onGlobalMouseUp);
+        window.addEventListener('touchmove', onGlobalMouseMove);
+        window.addEventListener('touchend', onGlobalMouseUp);
+
+        placeStones();
+        initPhysics();
+
+        // Обработчики сдвига поля
+        document.getElementById('btn-move-left').addEventListener('click', () => {
+            if (currentScrollPosition === 'right') {
+                currentScrollPosition = 'center';
+            } else if (currentScrollPosition === 'center') {
+                currentScrollPosition = 'left';
+            }
+            updateScrollPosition();
+        });
+
+        document.getElementById('btn-move-right').addEventListener('click', () => {
+            if (currentScrollPosition === 'left') {
+                currentScrollPosition = 'center';
+            } else if (currentScrollPosition === 'center') {
+                currentScrollPosition = 'right';
+            }
+            updateScrollPosition();
+        });
+
+        document.getElementById('btn-to-fight').addEventListener('click', async () => {
+            playSound('OpenNewFormSound.mp3');
+
+            // Определяем класс игры
+            isMasterMode = (classIndex === 1); // класс 2 (индекс 1) — Высший класс
+            console.log(`Класс игры: ${isMasterMode ? 'Высший класс (без стрелки)' : 'Стандарт'}`);
+            console.log('classIndex =', classIndex);
+
+            // Если выбран класс, требующий рекламу (класс 2 и выше)
+            const classData = CLASS_DATA[classIndex];
+            console.log('classData =', classData);
+
+            if (classData && classData.ru.needAd) {
+                console.log('✅ Показываем модальное окно согласия');
+                showAgreementForm();
+                return;
+            }
+
+            // Для класса 1 (Классический) — запускаем игру сразу
+            startGame();
+        });
+
+        // ========== ЗАПУСК ИГРЫ ==========
+        async function startGame() {
+            console.log('🚀 Запуск игры...');
+
+            // ========== НОВЫЙ БЛОК ДЛЯ СТАТИСТИКИ ==========
+            let currentClassName = 'Классический';
+            if (classIndex === 1) {
+                currentClassName = 'Классический PRO';
+            }
+
+            let currentModeName = 'Два игрока';
+            if (fieldIndex === 0) {
+                currentModeName = 'Два игрока';
+            } else if (fieldIndex === 1) {
+                currentModeName = 'С компьютером (легко)';
+            } else if (fieldIndex === 2) {
+                currentModeName = 'С компьютером (сложно)';
+            } else if (fieldIndex === 3) {
+                currentModeName = isComputerMode ? 'С компьютером (сложно)' : 'Два игрока';
+            }
+
+            window._currentClassName = currentClassName;
+            window._currentModeName = currentModeName;
+            console.log(`📊 Статистика: класс="${currentClassName}", режим="${currentModeName}"`);
+    // ========== КОНЕЦ НОВОГО БЛОКА ==========
+
+            isComputerMode = (fieldIndex === 1 || fieldIndex === 2);
+            computerDifficulty = fieldIndex === 1 ? 'easy' : (fieldIndex === 2 ? 'hard' : 'hard');
+            console.log(`Режим игры: ${isComputerMode ? 'Против компьютера' : 'Два игрока'}, Сложность: ${computerDifficulty}`);
+
+            currentScrollPosition = 'center';
+            updateScrollPosition();
+
+            currentRedY = START_RED_Y;
+            currentWhiteY = START_WHITE_Y;
+            isResettingRound = false;
+            redLines = 0;
+            whiteLines = 0;
+            isComputerThinking = false;
+            roundCounter = 0;
+
+            if (playerIndex === 0) {
+                turnFlag = 1;
+                lastRoundStarter = 'red';
+            } else if (playerIndex === 1) {
+                turnFlag = 0;
+                lastRoundStarter = 'white';
+            } else {
+                turnFlag = Math.random() < 0.5 ? 1 : 0;
+                lastRoundStarter = turnFlag === 1 ? 'red' : 'white';
+            }
+            updateTurnIndicator();
+
+            await hideBannerAd();
+
+            placeStonesWithOffset(START_RED_Y, START_WHITE_Y);
+            isGameActive = true;
+            switchScreen('screen_game');
+
+            if (isComputerMode && turnFlag === 0 && !isComputerThinking) {
+                setTimeout(() => {
+                    console.log("Компьютер делает первый ход");
+                    if (computerDifficulty === 'easy') {
+                        makeComputerMoveEasy();
+                    } else {
+                        makeComputerMoveHard();
+                    }
+                }, 500);
+            }
+        }
+
+        document.getElementById('btn-resume').addEventListener('click', () => {
+            playSound('OpenNewFormSound.mp3');
+
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+            isPhysicsRunning = false;
+
+            currentScrollPosition = 'center';
+            updateScrollPosition();
+
+            currentRedY = START_RED_Y;
+            currentWhiteY = START_WHITE_Y;
+            isResettingRound = false;
+            redLines = 0;
+            whiteLines = 0;
+            isComputerThinking = false;
+            roundCounter = 0;
+
+            if (playerIndex === 0) {
+                turnFlag = 1;
+                lastRoundStarter = 'red';
+            } else if (playerIndex === 1) {
+                turnFlag = 0;
+                lastRoundStarter = 'white';
+            } else {
+                turnFlag = Math.random() < 0.5 ? 1 : 0;
+                lastRoundStarter = turnFlag === 1 ? 'red' : 'white';
+            }
+            updateTurnIndicator();
+
+            placeStones();
+            initPhysics();
+
+            console.log('Перезапуск сражения');
+        });
+
+        document.getElementById('btn-to-menu').addEventListener('click', async () => {
+            playSound('OpenNewFormSound.mp3');
+            stopPhysics();
+            await showBannerAd();
+            switchScreen('screen_settings');
+        });
+
+        document.getElementById('btn-win-to-menu').addEventListener('click', async () => {
+            playSound('OpenNewFormSound.mp3');
+            stopPhysics();
+            await resetAndShowAd();
+            await showBannerAd();
+            switchScreen('screen_settings');
+        });
+
+        document.getElementById('btn-lost-to-menu').addEventListener('click', async () => {
+            playSound('OpenNewFormSound.mp3');
+            stopPhysics();
+            await resetAndShowAd();
+            await showBannerAd();
+            switchScreen('screen_settings');
+        });
+
+// Кнопка "В меню" на странице 1
+document.getElementById('btn-info-to-menu-1').addEventListener('click', async () => {
+    playSound('OpenNewFormSound.mp3');
+    stopPhysics();
+    await showBannerAd();
+    switchScreen('screen_settings');
+});
+
+// Кнопка "В меню" на странице 2
+document.getElementById('btn-info-to-menu-2').addEventListener('click', async () => {
+    playSound('OpenNewFormSound.mp3');
+    stopPhysics();
+    await showBannerAd();
+    switchScreen('screen_settings');
+});
+
+        document.getElementById('btn-score-to-menu').addEventListener('click', async () => {
+            playSound('OpenNewFormSound.mp3');
+            stopPhysics();
+            await showBannerAd();
+            switchScreen('screen_settings');
+        });
+
+        // ========== ОБРАБОТЧИКИ МОДАЛЬНОГО ОКНА ==========
+        // Кнопка "Согласен"
+        document.getElementById('btn-agree').addEventListener('click', () => {
+            playSound('OpenNewFormSound.mp3');
+            hideAgreementForm();
+            // Показываем рекламу за вознаграждение
+            watchRewardAd();
+        });
+
+        // Кнопка "Отмена"
+        document.getElementById('btn-cancel').addEventListener('click', () => {
+            playSound('OpenNewFormSound.mp3');
+            hideAgreementForm();
+            switchScreen('screen_settings');
+        });
+
+        window.addEventListener('resize', () => {
+            updateScrollPosition();
+        });
+
+        // Инициализация
+        function fitGameToScreen() {
+            const container = document.getElementById('game-container');
+            if (!container) return;
+
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const gameWidth = 1080;
+            const gameHeight = 2400;
+
+            const scaleX = screenWidth / gameWidth;
+            const scaleY = screenHeight / gameHeight;
+            currentScale = Math.min(scaleX, scaleY);
+
+            container.style.transform = `scale(${currentScale})`;
+            container.style.transformOrigin = 'top left';
+            container.style.width = `${gameWidth}px`;
+            container.style.height = `${gameHeight}px`;
+
+            const scaledWidth = gameWidth * currentScale;
+            const scaledHeight = gameHeight * currentScale;
+            container.style.position = 'absolute';
+            container.style.left = `${(screenWidth - scaledWidth) / 2}px`;
+            container.style.top = `${(screenHeight - scaledHeight) / 2}px`;
+
+            requestAnimationFrame(() => {
+                container.classList.add('visible');
+            });
+        }
+
+        window.addEventListener('load', fitGameToScreen);
+        window.addEventListener('resize', fitGameToScreen);
+
+        // ========== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ИНФОРМАЦИИ ==========
+        let currentInfoPage = 1;
+
+        function switchInfoPage(page) {
+            const page1 = document.getElementById('info-page-1');
+            const page2 = document.getElementById('info-page-2');
+
+            if (page === 1) {
+                page1.classList.remove('hidden');
+                page2.classList.add('hidden');
+                currentInfoPage = 1;
+            } else {
+                page1.classList.add('hidden');
+                page2.classList.remove('hidden');
+                currentInfoPage = 2;
+            }
+        }
+
+        // Кнопка "Вправо" (на странице 1)
+        document.getElementById('btn-info-right').addEventListener('click', () => {
+            playSound('TurnSwitchSound.mp3');
+            switchInfoPage(2);
+        });
+
+        // Кнопка "Влево" (на странице 2)
+        document.getElementById('btn-info-left').addEventListener('click', () => {
+            playSound('TurnSwitchSound.mp3');
+            switchInfoPage(1);
+        });
+
+
+
+        // ========== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА ==========
+        function changeLanguage(isEnglish) {
+            const playerRed = document.getElementById('player-red');
+            const playerWhite = document.getElementById('player-white');
+            const playerCases = document.getElementById('player-cases');
+            const btnNext = document.getElementById('btn-next');
+
+            if (playerRed) playerRed.src = `assets/images/Button_choose_player_${isEnglish ? 'red_EN' : 'red'}.png`;
+            if (playerWhite) playerWhite.src = `assets/images/Button_choose_player_${isEnglish ? 'white_EN' : 'white'}.png`;
+            if (playerCases) playerCases.src = `assets/images/Button_choose_player_${isEnglish ? 'cases_EN' : 'cases'}.png`;
+            if (btnNext) {
+                btnNext.src = `assets/images/Button_Next${isEnglish ? '_EN' : ''}.png`;
+            }
+
+            const soundOn = document.getElementById('sound-on');
+            const soundOff = document.getElementById('sound-off');
+            if (soundOn) soundOn.src = `assets/images/Button_choose_sound_${isEnglish ? 'on_EN' : 'on'}.png`;
+            if (soundOff) soundOff.src = `assets/images/Button_choose_sound_${isEnglish ? 'off_EN' : 'off'}.png`;
+
+            const fieldLast = document.getElementById('field-last');
+            const fieldEasy = document.getElementById('field-straight-easy');
+            const fieldHard = document.getElementById('field-straight-hard');
+            if (fieldLast) fieldLast.src = `assets/images/Sign_choose_game_field_Last_fight${isEnglish ? '_EN' : ''}.png`;
+            if (fieldEasy) fieldEasy.src = `assets/images/Sign_choose_game_field_Straight_attack_easy${isEnglish ? '_EN' : ''}.png`;
+            if (fieldHard) fieldHard.src = `assets/images/Sign_choose_game_field_Straight_attack_hard${isEnglish ? '_EN' : ''}.png`;
+
+            const turnRed = document.getElementById('turn-red');
+            const turnWhite = document.getElementById('turn-white');
+            if (turnRed) turnRed.src = `assets/images/Sign_turn_${isEnglish ? 'red_EN' : 'red'}.png`;
+            if (turnWhite) turnWhite.src = `assets/images/Sign_turn_${isEnglish ? 'white_EN' : 'white'}.png`;
+
+            const btnResume = document.getElementById('btn-resume');
+            const btnToMenu = document.getElementById('btn-to-menu');
+            const btnToFight = document.getElementById('btn-to-fight');
+            const btnWinToMenu = document.getElementById('btn-win-to-menu');
+            const btnLostToMenu = document.getElementById('btn-lost-to-menu');
+            const btnInfoToMenu = document.getElementById('btn-info-to-menu');
+            const btnScoreToMenu = document.getElementById('btn-score-to-menu');
+
+            if (btnResume) btnResume.src = `assets/images/Button_resume${isEnglish ? '_EN' : ''}.png`;
+            if (btnToMenu) btnToMenu.src = `assets/images/Button_to_menu_1${isEnglish ? '_EN' : ''}.png`;
+            if (btnToFight) btnToFight.src = `assets/images/Button_to_fight${isEnglish ? '_EN' : ''}.png`;
+            if (btnWinToMenu) btnWinToMenu.src = `assets/images/Button_to_menu_3${isEnglish ? '_EN' : ''}.png`;
+            if (btnLostToMenu) btnLostToMenu.src = `assets/images/Button_to_menu_2${isEnglish ? '_EN' : ''}.png`;
+            if (btnInfoToMenu) btnInfoToMenu.src = `assets/images/Button_to_menu_4${isEnglish ? '_EN' : ''}.png`;
+            if (btnScoreToMenu) btnScoreToMenu.src = `assets/images/Button_to_menu_1${isEnglish ? '_EN' : ''}.png`;
+
+            const screenSettings = document.getElementById('screen_settings');
+            const screenGame = document.getElementById('screen_game');
+            const screenInfo = document.getElementById('screen_info');
+            const screenScore = document.getElementById('screen_score');
+            const screenFinalWin = document.getElementById('screen_final_win');
+            const screenFinalLost = document.getElementById('screen_final_lost');
+
+            if (screenSettings) screenSettings.style.backgroundImage = `url('assets/images/Screen_settings${isEnglish ? '_EN' : ''}.png')`;
+            if (screenGame) screenGame.style.backgroundImage = `url('assets/images/Screen_game${isEnglish ? '_EN' : ''}.png')`;
+            if (screenInfo) screenInfo.style.backgroundImage = `url('assets/images/Screen_info${isEnglish ? '_EN' : ''}.png')`;
+            if (screenScore) screenScore.style.backgroundImage = `url('assets/images/Screen_score${isEnglish ? '_EN' : ''}.png')`;
+            if (screenFinalWin) screenFinalWin.style.backgroundImage = `url('assets/images/Screen_final_win${isEnglish ? '_EN' : ''}.png')`;
+            if (screenFinalLost) screenFinalLost.style.backgroundImage = `url('assets/images/Screen_final_lost${isEnglish ? '_EN' : ''}.png')`;
+
+            const statLabels = document.querySelectorAll('.stat-label');
+            if (statLabels.length >= 5) {
+                if (isEnglish) {
+                    statLabels[0].textContent = 'Total games';
+                    statLabels[1].textContent = 'Red wins';
+                    statLabels[2].textContent = 'White wins';
+                    statLabels[3].textContent = 'Red win rate';
+                    statLabels[4].textContent = 'White win rate';
+                } else {
+                    statLabels[0].textContent = 'Всего игр';
+                    statLabels[1].textContent = 'Побед красных';
+                    statLabels[2].textContent = 'Побед белых';
+                    statLabels[3].textContent = 'Процент побед красных';
+                    statLabels[4].textContent = 'Процент побед белых';
+                }
+            }
+
+            const versionInfo = document.getElementById('game-version-info');
+            if (versionInfo) {
+                versionInfo.textContent = `${isEnglish ? 'Version:' : 'Версия:'} ${GAME_VERSION}`;
+            }
+
+const versionInfo2 = document.getElementById('game-version-info-2');
+if (versionInfo2) {
+    versionInfo2.textContent = `${isEnglish ? 'Version:' : 'Версия:'} ${GAME_VERSION}`;
+}
+
+            // Переключение текста на странице 1
+            const infoTextRu = document.querySelector('.info-text-ru');
+            const infoTextEn = document.querySelector('.info-text-en');
+            if (infoTextRu && infoTextEn) {
+                if (isEnglish) {
+                    infoTextRu.classList.add('hidden');
+                    infoTextEn.classList.remove('hidden');
+                } else {
+                    infoTextRu.classList.remove('hidden');
+                    infoTextEn.classList.add('hidden');
+                }
+            }
+
+            // Переключение текста на странице 2
+            const infoTextRu2 = document.querySelector('.info-text-ru-2');
+            const infoTextEn2 = document.querySelector('.info-text-en-2');
+            if (infoTextRu2 && infoTextEn2) {
+                if (isEnglish) {
+                    infoTextRu2.classList.add('hidden');
+                    infoTextEn2.classList.remove('hidden');
+                } else {
+                    infoTextRu2.classList.remove('hidden');
+                    infoTextEn2.classList.add('hidden');
+                }
+            }
+            // ===== Переключение языка для классов =====
+            const classImages = ['class-1', 'class-2']; // пока только 2
+            classImages.forEach((id, idx) => {
+                const img = document.getElementById(id);
+                if (img) {
+                    const num = idx + 1;
+                    img.src = `assets/images/Button_choose_class_${num}${isEnglish ? '_EN' : ''}.png`;
+                }
+            });
+            // ===== Переключение языка для формы согласия =====
+            const agreeBtn = document.getElementById('btn-agree');
+            const cancelBtn = document.getElementById('btn-cancel');
+            if (agreeBtn) {
+                agreeBtn.src = `assets/images/Button_Agree_Form_agreemment${isEnglish ? '_EN' : ''}.png`;
+                console.log('Кнопка "Согласен" обновлена:', agreeBtn.src);
+            }
+            if (cancelBtn) {
+                cancelBtn.src = `assets/images/Button_Cancel_Form_agreemment${isEnglish ? '_EN' : ''}.png`;
+                console.log('Кнопка "Отмена" обновлена:', cancelBtn.src);
+            }
+        }
+
+        document.getElementById('btn-lang-ru')?.addEventListener('click', () => {
+            document.getElementById('btn-lang-ru').classList.add('hidden');
+            document.getElementById('btn-lang-en').classList.remove('hidden');
+            changeLanguage(true);
+            playSound('TurnSwitchSound.mp3');
+        });
+
+        document.getElementById('btn-lang-en')?.addEventListener('click', () => {
+            document.getElementById('btn-lang-ru').classList.remove('hidden');
+            document.getElementById('btn-lang-en').classList.add('hidden');
+            changeLanguage(false);
+            playSound('TurnSwitchSound.mp3');
+        });
+
+        // ========== ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ==========
+        async function init() {
+            console.log('🚀 Запуск игры...');
+
+            checkEnvironment();
+
+            if (isInVK) {
+                await initVKBridge();
+            } else {
+                console.log('⏭️ Работа вне VK, используем fallback');
+            }
+
+            setGameVersions();
+            await renderStats();
+
+            document.getElementById('btn-lang-ru').classList.remove('hidden');
+            document.getElementById('btn-lang-en').classList.add('hidden');
+            changeLanguage(false);
+
+            console.log('✅ Игра готова!');
+        }
+
+        init();
+
+        // Плавное появление кнопки Next
+        (function() {
+            const btnNext = document.getElementById('btn-next');
+            if (btnNext) {
+                const showButton = function() {
+                    btnNext.classList.add('loaded');
+                };
+
+                if (btnNext.complete && btnNext.naturalWidth > 0) {
+                    showButton();
+                } else {
+                    btnNext.addEventListener('load', showButton);
+                    btnNext.addEventListener('error', showButton);
+                    setTimeout(showButton, 3000);
+                }
+            }
+        })();
+      
+    </script>
+</body>
+</html>
