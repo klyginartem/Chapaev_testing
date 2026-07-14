@@ -3235,33 +3235,45 @@ document.getElementById('btn-info-to-menu-2').addEventListener('click', async ()
 
         // Инициализация
         function fitGameToScreen() {
-            const container = document.getElementById('game-container');
-            if (!container) return;
+    const container = document.getElementById('game-container');
+    if (!container) return;
 
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
-            const gameWidth = 6000;
-            const gameHeight = 2400;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const gameWidth = 1080;
+    const gameHeight = 2400;
 
-            const scaleX = screenWidth / gameWidth;
-            const scaleY = screenHeight / gameHeight;
-            currentScale = Math.min(scaleX, scaleY);
+    // Если экран шире 1080px — НЕ масштабируем, показываем фон
+    if (screenWidth >= gameWidth) {
+        currentScale = 1;
+        container.style.transform = 'scale(1)';
+        container.style.width = `${gameWidth}px`;
+        container.style.height = `${gameHeight}px`;
+        container.style.position = 'absolute';
+        container.style.left = `${(screenWidth - gameWidth) / 2}px`;
+        container.style.top = `${(screenHeight - gameHeight) / 2}px`;
+        container.classList.add('visible');
+        return;
+    }
 
-            container.style.transform = `scale(${currentScale})`;
-            container.style.transformOrigin = 'top left';
-            container.style.width = `${gameWidth}px`;
-            container.style.height = `${gameHeight}px`;
+    // Если экран уже 1080px — масштабируем
+    const scaleX = screenWidth / gameWidth;
+    const scaleY = screenHeight / gameHeight;
+    currentScale = Math.min(scaleX, scaleY);
 
-            const scaledWidth = gameWidth * currentScale;
-            const scaledHeight = gameHeight * currentScale;
-            container.style.position = 'absolute';
-            container.style.left = `${(screenWidth - scaledWidth) / 2}px`;
-            container.style.top = `${(screenHeight - scaledHeight) / 2}px`;
+    container.style.transform = `scale(${currentScale})`;
+    container.style.transformOrigin = 'top left';
+    container.style.width = `${gameWidth}px`;
+    container.style.height = `${gameHeight}px`;
 
-            requestAnimationFrame(() => {
-                container.classList.add('visible');
-            });
-        }
+    const scaledWidth = gameWidth * currentScale;
+    const scaledHeight = gameHeight * currentScale;
+    container.style.position = 'absolute';
+    container.style.left = `${(screenWidth - scaledWidth) / 2}px`;
+    container.style.top = `${(screenHeight - scaledHeight) / 2}px`;
+
+    container.classList.add('visible');
+}
 
         window.addEventListener('load', fitGameToScreen);
         window.addEventListener('resize', fitGameToScreen);
