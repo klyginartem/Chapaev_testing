@@ -13,6 +13,12 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             display: flex;
             justify-content: center;
@@ -20,25 +26,61 @@
             min-height: 100vh;
             background-color: #000;
             font-family: Arial, sans-serif;
+            position: relative;
         }
 
+            /* ========== ФОН ДЛЯ ВСЕГО ОКНА ========== */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-image: url('assets/images/BackFone_Main.png');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                z-index: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+
+            /* screen_next — BackFone_start.png */
+            body.screen-next-active::before {
+                background-image: url('assets/images/BackFone_start.png');
+            }
+
+            /* screen_start — BackFone_SecondForm.png */
+            body.screen-start-active::before {
+                background-image: url('assets/images/BackFone_SecondForm.png');
+            }
+
+            /* screen_game, screen_final_win, screen_final_lost — BackFone_Game.png */
+            body.screen-game-active::before {
+                background-image: url('assets/images/BackFone_Game.png');
+            }
+
+        /* Остальные экраны (settings, info, score) — BackFone_Main.png (по умолчанию) */
+
         #game-container {
-            width: 6000px;
+            width: 1080px;
             height: 2400px;
             position: relative;
-            background-color: #1a1a1a;
+            background-color: transparent;
             overflow: hidden;
             transition: transform 0.1s ease;
             transform-origin: top left;
             opacity: 0;
             visibility: hidden;
+            z-index: 1;
         }
 
-        #game-container.visible {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.3s ease;
-        }
+            #game-container.visible {
+                opacity: 1;
+                visibility: visible;
+                transition: opacity 0.3s ease;
+            }
 
         .screen {
             position: absolute;
@@ -47,16 +89,18 @@
             width: 100%;
             height: 100%;
             display: none;
+            background: transparent !important;
         }
 
-        .screen.active {
-            display: block;
-        }
+            .screen.active {
+                display: block;
+            }
 
         @media (max-width: 1080px) {
             body {
                 overflow: hidden;
             }
+
             #game-container {
                 position: absolute;
                 top: 0;
@@ -65,53 +109,6 @@
                 height: 100%;
                 overflow: hidden;
             }
-        }
-
-        #screen_next {
-            background: url('assets/images/Screen_Next.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-
-        #screen_start {
-            background: url('assets/images/Screen_start.png') no-repeat center center;
-            background-size: cover;
-        }
-
-        #screen_settings {
-            background: url('assets/images/Screen_settings.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-
-        #screen_game {
-            background: url('assets/images/Screen_game.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-
-        #screen_final_win {
-            background: url('assets/images/Screen_final_win.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-
-        #screen_final_lost {
-            background: url('assets/images/Screen_final_lost.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-
-        #screen_info {
-            background: url('assets/images/Screen_info.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-
-        #screen_score {
-            background: url('assets/images/Screen_score.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
         }
 
         /* ========== ВЕРСИЯ ИГРЫ ========== */
@@ -186,21 +183,9 @@
                 display: none;
             }
 
-        /* Контейнер для кнопок навигации */
-        .info-arrows-container {
+        .info-arrow-btn {
             position: absolute;
             bottom: 500px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: space-between;
-            width: 80%;
-            max-width: 900px;
-            z-index: 10;
-        }
-
-        /* Кнопки навигации */
-        .info-arrow-btn {
             cursor: pointer;
             transition: transform 0.2s;
             width: 110px;
@@ -208,11 +193,18 @@
             display: block;
         }
 
-        .info-arrow-btn:active {
-            transform: scale(0.9);
+            .info-arrow-btn:active {
+                transform: scale(0.9);
+            }
+
+        .info-arrow-right {
+            right: 80px;
         }
 
-        /* Кнопка "В меню" на обеих страницах */
+        .info-arrow-left {
+            left: 80px;
+        }
+
         #info-page-1 .final-btn,
         #info-page-2 .final-btn {
             position: absolute;
@@ -251,9 +243,9 @@
             transform: translateY(155px);
         }
 
-        .arrow-btn:active {
-            transform: translateY(155px) scale(0.9);
-        }
+            .arrow-btn:active {
+                transform: translateY(155px) scale(0.9);
+            }
 
         .choice-group {
             position: relative;
@@ -261,13 +253,13 @@
             height: auto;
         }
 
-        .choice-group .choice-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: auto;
-        }
+            .choice-group .choice-image {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: auto;
+            }
 
         .block-field {
             position: absolute;
@@ -298,15 +290,17 @@
             align-items: flex-end;
             gap: 15px;
         }
+
         .block-class {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: 500px; /* ← временно, потом отрегулируешь */
+            top: 500px;
             display: flex;
             align-items: flex-end;
             gap: 15px;
         }
+
         .info-buttons {
             position: absolute;
             left: 50%;
@@ -324,9 +318,9 @@
             display: block;
         }
 
-        .info-btn:active {
-            transform: scale(0.9);
-        }
+            .info-btn:active {
+                transform: scale(0.9);
+            }
 
         .fight-btn {
             position: absolute;
@@ -339,9 +333,9 @@
             bottom: 300px;
         }
 
-        .fight-btn:active {
-            transform: translateX(-50%) scale(0.9);
-        }
+            .fight-btn:active {
+                transform: translateX(-50%) scale(0.9);
+            }
 
         .next-btn {
             position: absolute;
@@ -358,14 +352,14 @@
             pointer-events: none;
         }
 
-        .next-btn.loaded {
-            opacity: 1;
-            pointer-events: auto;
-        }
+            .next-btn.loaded {
+                opacity: 1;
+                pointer-events: auto;
+            }
 
-        .next-btn:active {
-            transform: translateX(-50%) scale(0.9);
-        }
+            .next-btn:active {
+                transform: translateX(-50%) scale(0.9);
+            }
 
         #screen_next img {
             width: 400px;
@@ -395,10 +389,10 @@
             margin-bottom: 30px;
         }
 
-        .top-panel img {
-            height: 100px;
-            width: auto;
-        }
+            .top-panel img {
+                height: 100px;
+                width: auto;
+            }
 
         .turn-indicator {
             position: relative;
@@ -406,13 +400,13 @@
             height: 70px;
         }
 
-        .turn-indicator img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: auto;
-        }
+            .turn-indicator img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: auto;
+            }
 
         .score-block {
             display: flex;
@@ -452,9 +446,9 @@
             height: auto;
         }
 
-        .rotate-btn:active {
-            transform: scale(0.9);
-        }
+            .rotate-btn:active {
+                transform: scale(0.9);
+            }
 
         .action-buttons {
             display: flex;
@@ -471,10 +465,10 @@
             height: auto;
         }
 
-        .resume-btn:active,
-        .menu-btn:active {
-            transform: scale(0.9);
-        }
+            .resume-btn:active,
+            .menu-btn:active {
+                transform: scale(0.9);
+            }
 
         #game-scroll-container {
             position: relative;
@@ -504,15 +498,15 @@
             pointer-events: auto;
         }
 
-        .stone:active {
-            transform: scale(0.95);
-        }
+            .stone:active {
+                transform: scale(0.95);
+            }
 
-        .stone img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
+            .stone img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
 
             .stone.selected {
                 border-radius: 50%;
@@ -538,9 +532,9 @@
             transform: translateX(-50%);
         }
 
-        .final-btn:active {
-            transform: translateX(-50%) scale(0.9);
-        }
+            .final-btn:active {
+                transform: translateX(-50%) scale(0.9);
+            }
 
         /* ========== СТАТИСТИКА ========== */
         #screen_score {
@@ -559,9 +553,8 @@
             font-size: 45px;
             text-align: center;
             padding: 15px 20px;
-         
-            
         }
+
         .stats-class {
             font-size: 45px;
             font-weight: bold;
@@ -576,11 +569,9 @@
             color: #000000;
             margin-top: 10px;
             margin-bottom: 5px;
-            /* ФОН */
             background: rgba(100, 100, 100, 0.2);
             padding: 8px 15px;
             border-radius: 8px;
-            /* display: inline-block; /* чтобы фон был только под текстом */
         }
 
         .stats-row {
@@ -632,7 +623,6 @@
             padding: 20px;
         }
 
-        /* ========== КНОПКА "В МЕНЮ" НА ФОРМЕ СТАТИСТИКИ ========== */
         .score-menu-btn {
             width: 70%;
             max-width: 500px;
@@ -719,15 +709,15 @@
             display: block;
         }
 
-        .lang-btn:active {
-            transform: scale(0.9);
-        }
+            .lang-btn:active {
+                transform: scale(0.9);
+            }
 
-        .lang-btn.hidden {
-            display: none;
-        }
+            .lang-btn.hidden {
+                display: none;
+            }
+
         @media (max-width: 768px) {
-            /* ===== Форма информации ===== */
             .info-text {
                 font-size: 26px;
             }
@@ -736,7 +726,6 @@
                 font-size: 26px;
             }
 
-            /* ===== Модальное окно согласия ===== */
             .agreement-text {
                 font-size: 40px;
                 margin-bottom: 30px;
@@ -754,9 +743,7 @@
                 width: 90% !important;
                 padding: 40px 20px;
             }
-            
-                /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ СТАТИСТИКИ===== */
-    
+
             .stats-container {
                 top: 400px;
                 width: 94%;
@@ -764,26 +751,61 @@
                 font-size: 35px;
                 max-height: 55vh;
             }
-            .stats-class { font-size: 35px; margin-top: 8px; margin-bottom: 8px; }
-            .stats-mode { font-size: 35px; padding: 3px 10px; }
-            .stats-row { font-size: 22px; padding: 3px 0; }
-            .stats-value-total { font-size: 35px; min-width: 40px; }
-            .stats-value-red { font-size: 35px; min-width: 70px; }
-            .stats-value-white { font-size: 35px; min-width: 70px; }
-            .stats-header-row { font-size: 35px; padding: 5px 0; }
-            .stats-empty { font-size: 20px; padding: 15px; }
-            .score-menu-btn { width: 60%; max-width: 350px; bottom: 200px; }
-            
-            /* ===== КНОПКА ВОЗВРАТА ===== */
+
+            .stats-class {
+                font-size: 35px;
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
+
+            .stats-mode {
+                font-size: 35px;
+                padding: 3px 10px;
+            }
+
+            .stats-row {
+                font-size: 22px;
+                padding: 3px 0;
+            }
+
+            .stats-value-total {
+                font-size: 35px;
+                min-width: 40px;
+            }
+
+            .stats-value-red {
+                font-size: 35px;
+                min-width: 70px;
+            }
+
+            .stats-value-white {
+                font-size: 35px;
+                min-width: 70px;
+            }
+
+            .stats-header-row {
+                font-size: 35px;
+                padding: 5px 0;
+            }
+
+            .stats-empty {
+                font-size: 20px;
+                padding: 15px;
+            }
+
             .score-menu-btn {
-                width: 70%;           /* ← ширина 80% от экрана */
-                max-width: 500px;     /* ← максимальная ширина */
-                bottom: 250px;        /* ← отступ от низа (чем меньше, тем ниже) */
+                width: 60%;
+                max-width: 350px;
+                bottom: 200px;
+            }
+
+            .score-menu-btn {
+                width: 70%;
+                max-width: 500px;
+                bottom: 250px;
                 left: 50%;
                 transform: translateX(-50%);
             }
-        
-        }
         }
     </style>
 </head>
@@ -798,17 +820,11 @@
         </div>
 
         <div id="screen_settings" class="screen">
-            <!-- Блок выбора класса игры -->
             <div class="block-class">
                 <img src="assets/images/Button_left_0_1.png" alt="Влево" class="arrow-btn" id="btn-class-left">
                 <div class="choice-group" id="class-group">
                     <img src="assets/images/Button_choose_class_1.png" alt="Класс 1" id="class-1" class="choice-image">
                     <img src="assets/images/Button_choose_class_2.png" alt="Класс 2" id="class-2" class="choice-image hidden">
-                    <!-- Классы 3-5 пока закомментированы
-                <img src="assets/images/Button_choose_class_3.png" alt="Класс 3" id="class-3" class="choice-image hidden">
-                <img src="assets/images/Button_choose_class_4.png" alt="Класс 4" id="class-4" class="choice-image hidden">
-                <img src="assets/images/Button_choose_class_5.png" alt="Класс 5" id="class-5" class="choice-image hidden">
-                -->
                 </div>
                 <img src="assets/images/Button_right_0_2.png" alt="Вправо" class="arrow-btn" id="btn-class-right">
             </div>
@@ -848,17 +864,7 @@
                     <img src="assets/images/Button_lang_EN.png" alt="English" class="lang-btn hidden" id="btn-lang-en">
                 </div>
                 <img src="assets/images/Button_score.png" alt="Статистика" class="info-btn" id="btn-to-score">
-                <img src="assets/images/VK_AEK_games.png"
-                     alt="Сообщество АЕК игры"
-                     class="info-btn"
-                     id="btn-to-community"
-                     style="cursor: pointer; transition: transform 0.2s;"
-                     onmousedown="this.style.transform='scale(0.9)'"
-                     onmouseup="this.style.transform='scale(1)'"
-                     onmouseleave="this.style.transform='scale(1)'"
-                     ontouchstart="this.style.transform='scale(0.9)'"
-                     ontouchend="this.style.transform='scale(1)'"
-                     onclick="window.open('https://vk.ru/aekgames', '_blank'); playSound('OpenNewFormSound.mp3');">
+                <img src="assets/images/VK_AEK_games.png" alt="Сообщество АЕК игры" class="info-btn" id="btn-to-community" style="cursor: pointer; transition: transform 0.2s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'" ontouchstart="this.style.transform='scale(0.9)'" ontouchend="this.style.transform='scale(1)'" onclick="window.open('https://vk.ru/aekgames', '_blank'); playSound('OpenNewFormSound.mp3');">
             </div>
 
             <img src="assets/images/Button_to_fight.png" alt="Сражаться" class="fight-btn" id="btn-to-fight">
@@ -907,121 +913,90 @@
             <img src="assets/images/Button_to_menu_2.png" alt="В меню" class="final-btn" id="btn-lost-to-menu">
         </div>
 
-        <!-- ====== ЭКРАН ИНФОРМАЦИИ ====== -->
+        <div id="screen_info" class="screen">
+            <div class="info-page" id="info-page-1">
+                <div class="info-version" id="game-version-info"></div>
+                <div class="info-text">
+                    <div class="info-text-content">
+                        <span class="info-text-ru">
+                            *ЦЕЛЬ ИГРЫ:*<br>
+                            Выбейте все шашки противника с игрового поля. Игроки по очереди наносят удары. Очередность первого хода определяется настройками игры. Проигравший раунд всегда начинает первым. Игрок, выбивший все шашки соперника, перемещает свои шашки на одну линию вперед. Проигравший игрок отступает на одну линию назад, если до этого его шашки продвигались вперед. Постепенно шашки противников сближаются настолько, что оказываются рядом друг с другом. Игра заканчивается, когда один игрок вытолкнет шашки другого игрока с последней линии. В решающей битве на последней линии первый ход всегда делает проигрывающий игрок.<br>
+                            <br>
+                            *ВЫБОР КЛАССА ИГРЫ:*<br>
+                            В игре доступны два класса, которые отличаются уровнем сложности:<br>
+                            <b>Классический</b> — при захвате шашки отображается стрелка, показывающая направление и силу удара.<br>
+                            Идеальный выбор для новичков и тех, кто хочет видеть все параметры своего хода.<br>
+                        </span>
+                        <span class="info-text-en hidden">
+                            *GAME OBJECTIVE:*<br>
+                            Knock all of the opponent's checkers off the board. Players take turns making moves. The order of the first move is determined by the game settings. The player who loses a round always goes first. The player who knocks all of the opponent's checkers moves their own checkers one row forward. The losing player moves back one row if their checkers had previously advanced. Gradually, the opponents' checkers come closer until they are next to each other. The game ends when one player pushes the other player's checkers off the last row. In the final battle on the last row, the losing player always makes the first move.<br>
+                            <br>
+                            *GAME CLASS SELECTION:*<br>
+                            Two game classes are available, differing in difficulty level:<br>
+                            <b>Classic</b> — when you grab a checker, an arrow is displayed, showing the direction and power of your strike.<br>
+                            An ideal choice for beginners and those who want to see all the parameters of their move.<br>
+                        </span>
+                    </div>
+                </div>
+                <img src="assets/images/Button_turn_right.png" alt="Вправо" class="info-arrow-btn info-arrow-right" id="btn-info-right">
+                <img src="assets/images/Button_to_menu_4.png" alt="В меню" class="final-btn" id="btn-info-to-menu-1">
+            </div>
 
-        <!-- ====== ЭКРАН ИНФОРМАЦИИ ====== -->
-
-<div id="screen_info" class="screen">
-    <!-- Страница 1 -->
-    <div class="info-page" id="info-page-1">
-        <div class="info-version" id="game-version-info"></div>
-        <div class="info-text">
-            <div class="info-text-content">
-                <span class="info-text-ru">
-                    *ЦЕЛЬ ИГРЫ:*<br>
-                    Выбейте все шашки противника с игрового поля. Игроки по очереди наносят удары. Очередность первого хода определяется настройками игры. Проигравший раунд всегда начинает первым. Игрок, выбивший все шашки соперника, перемещает свои шашки на одну линию вперед. Проигравший игрок отступает на одну линию назад, если до этого его шашки продвигались вперед. Постепенно шашки противников сближаются настолько, что оказываются рядом друг с другом. Игра заканчивается, когда один игрок вытолкнет шашки другого игрока с последней линии. В решающей битве на последней линии первый ход всегда делает проигрывающий игрок.<br>
-                    <br>
-                    *ВЫБОР КЛАССА ИГРЫ:*<br>
-                    В игре доступны два класса, которые отличаются уровнем сложности:<br>
-                    <b>Классический</b> — при захвате шашки отображается стрелка, показывающая направление и силу удара.<br>
-                    Идеальный выбор для новичков и тех, кто хочет видеть все параметры своего хода.<br>
-                </span>
-                <span class="info-text-en hidden">
-                    *GAME OBJECTIVE:*<br>
-                    Knock all of the opponent's checkers off the board. Players take turns making moves. The order of the first move is determined by the game settings. The player who loses a round always goes first. The player who knocks all of the opponent's checkers moves their own checkers one row forward. The losing player moves back one row if their checkers had previously advanced. Gradually, the opponents' checkers come closer until they are next to each other. The game ends when one player pushes the other player's checkers off the last row. In the final battle on the last row, the losing player always makes the first move.<br>
-                    <br>
-                    *GAME CLASS SELECTION:*<br>
-                    Two game classes are available, differing in difficulty level:<br>
-                    <b>Classic</b> — when you grab a checker, an arrow is displayed, showing the direction and power of your strike.<br>
-                    An ideal choice for beginners and those who want to see all the parameters of their move.<br>
-                </span>
+            <div class="info-page hidden" id="info-page-2">
+                <div class="info-version" id="game-version-info-2"></div>
+                <div class="info-text">
+                    <div class="info-text-content">
+                        <span class="info-text-ru-2">
+                            <b>Классический PRO</b> — стрелка силы и направления удара <b>не отображается</b>.<br>
+                            Вам предстоит полагаться только на свою интуицию, опыт и точность расчёта.<br>
+                            Режим для настоящих профессионалов!<br>
+                            <br>
+                            *ИГРОВАЯ МЕХАНИКА:*<br>
+                            Коснитесь пальцем одной из ваших шашек и проведите в противоположную от шашек противника сторону, не отпуская пальца. Отпустив палец, вы произведете удар. Чем дальше отведёте палец, тем сильнее будет удар. Ориентируйтесь на красную стрелку - она показывает направление удара.<br><br>
+                            *ОСОБЕННОСТИ:*<br>
+                            Вы можете двигать игровое поле влево и вправо, чтобы выбрать наилучшую позицию для нанесения удара шашкой, которая располагается близко к правой или левой границе экрана.
+                        </span>
+                        <span class="info-text-en-2 hidden">
+                            <b>Classic PRO</b> — the arrow showing power and direction is <b>not displayed</b>.<br>
+                            You will have to rely solely on your intuition, experience, and precision.<br>
+                            <br>
+                            A mode for true professionals!
+                            *GAME MECHANICS:*<br>
+                            Touch one of your checkers with your finger and swipe it in the direction opposite to the opponent's checkers without lifting your finger. Releasing your finger will perform a strike. The farther you pull your finger, the stronger the strike. Use the red arrow as a guide—it shows the direction of the strike.<br><br>
+                            *FEATURES:*<br>
+                            You can move the game board left and right to choose the best position to strike with a checker located near the right or left edge of the screen.
+                        </span>
+                    </div>
+                </div>
+                <img src="assets/images/Button_turn_left.png" alt="Влево" class="info-arrow-btn info-arrow-left" id="btn-info-left">
+                <img src="assets/images/Button_to_menu_4.png" alt="В меню" class="final-btn" id="btn-info-to-menu-2">
             </div>
         </div>
-        <!-- КОНТЕЙНЕР с кнопками навигации (СТРАНИЦА 1) -->
-        <div class="info-arrows-container">
-            <!-- Левая кнопка (скрыта на странице 1) -->
-            <img src="assets/images/Button_turn_left.png" alt="Влево" class="info-arrow-btn" id="btn-info-left-page1" style="visibility: hidden;">
-            <!-- Правая кнопка (переход на страницу 2) -->
-            <img src="assets/images/Button_turn_right.png" alt="Вправо" class="info-arrow-btn" id="btn-info-right">
-        </div>
-        <!-- Кнопка "В меню" на странице 1 -->
-        <img src="assets/images/Button_to_menu_4.png" alt="В меню" class="final-btn" id="btn-info-to-menu-1">
-    </div>
 
-    <!-- Страница 2 -->
-    <div class="info-page hidden" id="info-page-2">
-        <div class="info-version" id="game-version-info-2"></div>
-        <div class="info-text">
-            <div class="info-text-content">
-                <span class="info-text-ru-2">
-                    <b>Классический PRO</b> — стрелка силы и направления удара <b>не отображается</b>.<br>
-                    Вам предстоит полагаться только на свою интуицию, опыт и точность расчёта.<br>
-                    Режим для настоящих профессионалов!<br>
-                    <br>
-                    *ИГРОВАЯ МЕХАНИКА:*<br>
-                    Коснитесь пальцем одной из ваших шашек и проведите в противоположную от шашек противника сторону, не отпуская пальца. Отпустив палец, вы произведете удар. Чем дальше отведёте палец, тем сильнее будет удар. Ориентируйтесь на красную стрелку - она показывает направление удара.<br><br>
-                    *ОСОБЕННОСТИ:*<br>
-                    Вы можете двигать игровое поле влево и вправо, чтобы выбрать наилучшую позицию для нанесения удара шашкой, которая располагается близко к правой или левой границе экрана.
-                </span>
-                <span class="info-text-en-2 hidden">
-                    <b>Classic PRO</b> — the arrow showing power and direction is <b>not displayed</b>.<br>
-                    You will have to rely solely on your intuition, experience, and precision.<br>
-                    <br>
-                    A mode for true professionals!
-                    *GAME MECHANICS:*<br>
-                    Touch one of your checkers with your finger and swipe it in the direction opposite to the opponent's checkers without lifting your finger. Releasing your finger will perform a strike. The farther you pull your finger, the stronger the strike. Use the red arrow as a guide—it shows the direction of the strike.<br><br>
-                    *FEATURES:*<br>
-                    You can move the game board left and right to choose the best position to strike with a checker located near the right or left edge of the screen.
-                </span>
-            </div>
-        </div>
-        <!-- КОНТЕЙНЕР с кнопками навигации (СТРАНИЦА 2) -->
-        <div class="info-arrows-container">
-            <!-- Левая кнопка (переход на страницу 1) -->
-            <img src="assets/images/Button_turn_left.png" alt="Влево" class="info-arrow-btn" id="btn-info-left">
-            <!-- Правая кнопка (скрыта на странице 2) -->
-            <img src="assets/images/Button_turn_right.png" alt="Вправо" class="info-arrow-btn" id="btn-info-right-page2" style="visibility: hidden;">
-        </div>
-        <!-- Кнопка "В меню" на странице 2 -->
-        <img src="assets/images/Button_to_menu_4.png" alt="В меню" class="final-btn" id="btn-info-to-menu-2">
-    </div>
-</div>
-
-        <!-- ====== ЭКРАН СТАТИСТИКИ ====== -->
         <div id="screen_score" class="screen">
-            <!-- Контейнер статистики -->
             <div class="stats-container" id="stats-container">
-                <!-- Заголовок -->
                 <div class="stats-header-row">
                     <span>Всего игр</span>
                     <span>Победы Кр.</span>
                     <span>Победы Бел.</span>
                 </div>
-                <!-- Динамические данные -->
                 <div id="stats-content"></div>
             </div>
-            <!-- Кнопка "В меню" — НЕ ТРОГАЕМ -->
             <img src="assets/images/Button_to_menu_1.png" alt="В меню" class="score-menu-btn" id="btn-score-to-menu">
         </div>
 
-        <!-- ====== МОДАЛЬНОЕ ОКНО СОГЛАСИЯ ====== -->
         <div id="agreement-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
             <div class="agreement-modal">
-                <div class="agreement-text" id="agreement-text">
-                    <!-- Текст будет вставлен через JavaScript -->
-                </div>
+                <div class="agreement-text" id="agreement-text"></div>
                 <div class="agreement-buttons">
                     <img src="assets/images/Button_Agree_Form_agreemment.png" alt="Согласен" class="agreement-btn" id="btn-agree">
                     <img src="assets/images/Button_Cancel_Form_agreemment.png" alt="Отмена" class="agreement-btn" id="btn-cancel">
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- ПРАВИЛЬНОЕ ПОДКЛЮЧЕНИЕ VK BRIDGE -->
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-
     <script>
         // ========== ПРОВЕРКА ОКРУЖЕНИЯ ==========
         let isInVK = false;
@@ -1064,14 +1039,6 @@
 
                     case 'VKWebAppBannerAdClosedByUser':
                         console.log('👆 Пользователь закрыл баннер');
-                        console.log('📊 СОСТОЯНИЕ ДО ВОЗОБНОВЛЕНИЯ:');
-                        console.log('  - isGameActive:', isGameActive);
-                        console.log('  - isGamePaused:', isGamePaused);
-                        console.log('  - isPhysicsRunning:', isPhysicsRunning);
-                        console.log('  - gameLoopId:', gameLoopId);
-                        console.log('  - turnFlag:', turnFlag);
-                        console.log('  - isDragging:', isDragging);
-                        console.log('  - selectedStone:', selectedStone ? 'есть' : 'null');
                         bannerShown = false;
                         resumeGame();
                         break;
@@ -1115,22 +1082,11 @@
         }
 
         function resumeGame() {
-            console.log('▶️ resumeGame() ВЫЗВАН');
-            console.log('📊 ВХОДНЫЕ ПАРАМЕТРЫ:');
-            console.log('  - isGameActive:', isGameActive);
-            console.log('  - isGamePaused:', isGamePaused);
-            console.log('  - isPhysicsRunning:', isPhysicsRunning);
-            console.log('  - gameLoopId:', gameLoopId);
-            console.log('  - turnFlag:', turnFlag);
-            console.log('  - isDragging:', isDragging);
-            console.log('  - selectedStone:', selectedStone ? 'есть' : 'null');
-
             if (isGamePaused) {
-                console.log('🔄 Восстановление сохранённого состояния (isGamePaused === true)');
+                console.log('🔄 Восстановление сохранённого состояния');
                 isGamePaused = false;
 
                 if (savedGameState) {
-                    console.log('  - savedGameState существует, восстанавливаем...');
                     turnFlag = savedGameState.turnFlag;
                     redLines = savedGameState.redLines;
                     whiteLines = savedGameState.whiteLines;
@@ -1163,52 +1119,21 @@
                     });
 
                     savedGameState = null;
-
                     isGameActive = true;
-                    console.log('  ✅ isGameActive принудительно установлен в true');
-                } else {
-                    console.log('  ⚠️ savedGameState === null, пропускаем восстановление');
                 }
-            } else {
-                console.log('📌 isGamePaused === false, пропускаем восстановление состояния');
             }
 
             if (isDragging) {
-                console.log('🔄 Сброс состояния перетаскивания (isDragging === true)');
                 isDragging = false;
                 selectedStone = null;
                 removeAimLine();
-            } else {
-                console.log('📌 isDragging === false, сброс не нужен');
             }
 
-            console.log('📊 ПРОВЕРКА ЗАПУСКА ФИЗИКИ:');
-            console.log('  - isGameActive:', isGameActive);
-            console.log('  - isPhysicsRunning:', isPhysicsRunning);
-
             if (isGameActive && !isPhysicsRunning) {
-                console.log('🚀 ЗАПУСКАЕМ ФИЗИКУ (isGameActive && !isPhysicsRunning)');
                 startPhysics();
-                console.log('  ✅ startPhysics() вызван');
-            } else if (isGameActive && isPhysicsRunning) {
-                console.log('✅ Физика уже запущена, ничего не делаем');
-            } else if (!isGameActive) {
-                console.log('⚠️ ИГРА НЕ АКТИВНА (isGameActive === false)');
-                console.log('  - Это нормально, если мы между раундами');
-                console.log('  - Игра будет запущена при следующем действии пользователя');
             }
 
             updateTurnIndicator();
-            console.log('🔄 Индикатор хода обновлён, turnFlag =', turnFlag);
-            console.log('📊 ИТОГОВОЕ СОСТОЯНИЕ:');
-            console.log('  - isGameActive:', isGameActive);
-            console.log('  - isPhysicsRunning:', isPhysicsRunning);
-            console.log('  - isGamePaused:', isGamePaused);
-            console.log('  - isDragging:', isDragging);
-            console.log('  - turnFlag:', turnFlag);
-            console.log('  - stonesList.length:', stonesList.length);
-            console.log('  - активных шашек:', stonesList.filter(s => s.active).length);
-            console.log('▶️ resumeGame() ЗАВЕРШЁН');
         }
 
         // ========== ПРИМЕНЕНИЕ ТЕМЫ ==========
@@ -1435,14 +1360,9 @@
             return result;
         }
 
-        // ========== VK STORAGE / localStorage FALLBACK ==========
-        // ========================================================================
-        // ========== СТАТИСТИКА С VK STORAGE ==========
-        // ========================================================================
-
+        // ========== СТАТИСТИКА ==========
         const STATS_KEY = 'chapaev_stats_v2';
 
-        // ----- Структура по умолчанию -----
         function getDefaultStats() {
             return {
                 'Классический': {
@@ -1458,9 +1378,7 @@
             };
         }
 
-        // ----- Загрузить с VK Storage или localStorage -----
         async function loadStats() {
-            // Сначала пробуем загрузить из VK Storage
             if (isInVK && vkBridge && isVKBridgeReady) {
                 try {
                     const response = await vkBridge.send('VKWebAppStorageGet', {
@@ -1469,7 +1387,6 @@
 
                     if (response.keys && response.keys.length > 0 && response.keys[0].value) {
                         const stats = JSON.parse(response.keys[0].value);
-                        // Кэшируем в localStorage
                         localStorage.setItem(STATS_KEY, JSON.stringify(stats));
                         console.log('✅ Статистика загружена из VK Storage');
                         return stats;
@@ -1479,7 +1396,6 @@
                 }
             }
 
-            // Fallback на localStorage
             const saved = localStorage.getItem(STATS_KEY);
             if (saved) {
                 try {
@@ -1488,16 +1404,13 @@
                     console.error('❌ Ошибка парсинга localStorage:', e);
                 }
             }
-            
+
             return getDefaultStats();
         }
 
-        // ----- Сохранить в VK Storage и localStorage -----
         async function saveStats(stats) {
-            // Всегда сохраняем в localStorage как резерв
             localStorage.setItem(STATS_KEY, JSON.stringify(stats));
 
-            // Сохраняем в VK Storage, если доступно
             if (isInVK && vkBridge && isVKBridgeReady) {
                 try {
                     await vkBridge.send('VKWebAppStorageSet', {
@@ -1511,29 +1424,27 @@
                 }
             }
 
-            console.log('📦 Статистика сохранена в localStorage (VK Storage недоступен)');
+            console.log('📦 Статистика сохранена в localStorage');
         }
 
-        // ----- Обновить статистику -----
         async function updateStats(className, modeName, isRedWin) {
             const stats = await loadStats();
-            
+
             if (!stats[className]) stats[className] = {};
             if (!stats[className][modeName]) {
                 stats[className][modeName] = { total: 0, redWins: 0, whiteWins: 0 };
             }
-            
+
             stats[className][modeName].total++;
             if (isRedWin) {
                 stats[className][modeName].redWins++;
             } else {
                 stats[className][modeName].whiteWins++;
             }
-            
+
             await saveStats(stats);
         }
 
-        // ----- Отобразить статистику -----
         async function renderStats() {
             const container = document.getElementById('stats-content');
             if (!container) return;
@@ -1584,56 +1495,40 @@
                     const whitePercent = total > 0 ? Math.round((whiteWins / total) * 100) : 0;
 
                     row.innerHTML = `
-                        <span class="stats-value-total">${total}</span>
-                        <span class="stats-value-red">${redWins} (${redPercent}%)</span>
-                        <span class="stats-value-white">${whiteWins} (${whitePercent}%)</span>
-                    `;
+                            <span class="stats-value-total">${total}</span>
+                            <span class="stats-value-red">${redWins} (${redPercent}%)</span>
+                            <span class="stats-value-white">${whiteWins} (${whitePercent}%)</span>
+                        `;
                     container.appendChild(row);
                 });
             });
         }
 
-        // ----- Функция addGameResult -----
         async function addGameResult(isWin, className, modeName) {
             if (className && modeName) {
                 await updateStats(className, modeName, isWin);
             }
         }
 
-        // ----- Обработчик кнопки статистики -----
-        document.getElementById('btn-to-score').addEventListener('click', async function () {
-            playSound('OpenNewFormSound.mp3');
-            await renderStats();
-            switchScreen('screen_score');
-        });
-
-        // ----- Обработчик кнопки "В меню" -----
-        document.getElementById('btn-score-to-menu').addEventListener('click', async function () {
-            playSound('OpenNewFormSound.mp3');
-            stopPhysics();
-            await showBannerAd();
-            switchScreen('screen_settings');
-        });
-
         // ========== ВЕРСИЯ ИГРЫ ==========
-        const GAME_VERSION = "1.1.3a";
+        const GAME_VERSION = "1.1.2";
 
-function setGameVersions() {
-    const versionStart = document.getElementById('game-version-start');
-    if (versionStart) {
-        versionStart.textContent = `v${GAME_VERSION}`;
-    }
-    const versionInfo = document.getElementById('game-version-info');
-    if (versionInfo) {
-        versionInfo.textContent = `Версия: ${GAME_VERSION}`;
-    }
-    const versionInfo2 = document.getElementById('game-version-info-2');
-    if (versionInfo2) {
-        versionInfo2.textContent = `Версия: ${GAME_VERSION}`;
-    }
-}
+        function setGameVersions() {
+            const versionStart = document.getElementById('game-version-start');
+            if (versionStart) {
+                versionStart.textContent = `v${GAME_VERSION}`;
+            }
+            const versionInfo = document.getElementById('game-version-info');
+            if (versionInfo) {
+                versionInfo.textContent = `Версия: ${GAME_VERSION}`;
+            }
+            const versionInfo2 = document.getElementById('game-version-info-2');
+            if (versionInfo2) {
+                versionInfo2.textContent = `Версия: ${GAME_VERSION}`;
+            }
+        }
 
-        // ========== ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ ==========
+        // ========== ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ С МЕНЯЮЩИМСЯ ФОНОМ ==========
         function switchScreen(screenId) {
             if (screenId !== 'screen_game') {
                 if (gameLoopId) {
@@ -1653,7 +1548,25 @@ function setGameVersions() {
             });
             document.getElementById(screenId).classList.add('active');
 
-            // Сбрасываем на первую страницу информации при открытии
+            // Убираем все классы фонов
+            document.body.classList.remove(
+                'screen-next-active',
+                'screen-start-active',
+                'screen-game-active'
+            );
+
+            // Устанавливаем нужный фон
+            if (screenId === 'screen_next') {
+                document.body.classList.add('screen-next-active');
+            } else if (screenId === 'screen_start') {
+                document.body.classList.add('screen-start-active');
+            } else if (screenId === 'screen_game' ||
+                screenId === 'screen_final_win' ||
+                screenId === 'screen_final_lost') {
+                document.body.classList.add('screen-game-active');
+            }
+            // screen_settings, screen_info, screen_score — используют BackFone_Main.png (по умолчанию)
+
             if (screenId === 'screen_info') {
                 switchInfoPage(1);
             }
@@ -1692,16 +1605,7 @@ function setGameVersions() {
             }
         }
 
-        // Кнопка перехода на стартовый экран
-        document.getElementById('btn-next').addEventListener('click', () => {
-            playSound('StartSound.mp3');
-            switchScreen('screen_start');
-            setTimeout(() => {
-                switchScreen('screen_settings');
-            }, 3000);
-        });
-
-        // ========== ПЕРЕКЛЮЧАТЕЛИ НА ЭКРАНЕ НАСТРОЕК ==========
+        // ========== ПЕРЕКЛЮЧАТЕЛИ ==========
         let fieldIndex = 0;
         const fieldImages = ['field-last', 'field-straight-easy', 'field-straight-hard'];
 
@@ -1715,14 +1619,6 @@ function setGameVersions() {
             });
             playSound('TurnSwitchSound.mp3');
         }
-        document.getElementById('btn-field-left').addEventListener('click', () => {
-            fieldIndex = (fieldIndex - 1 + fieldImages.length) % fieldImages.length;
-            updateField();
-        });
-        document.getElementById('btn-field-right').addEventListener('click', () => {
-            fieldIndex = (fieldIndex + 1) % fieldImages.length;
-            updateField();
-        });
 
         let playerIndex = 0;
         const playerImages = ['player-red', 'player-white', 'player-cases'];
@@ -1737,50 +1633,32 @@ function setGameVersions() {
             });
             playSound('TurnSwitchSound.mp3');
         }
-        document.getElementById('btn-player-left').addEventListener('click', () => {
-            playerIndex = (playerIndex - 1 + playerImages.length) % playerImages.length;
-            updatePlayer();
-        });
-        document.getElementById('btn-player-right').addEventListener('click', () => {
-            playerIndex = (playerIndex + 1) % playerImages.length;
-            updatePlayer();
-        });
 
         let soundIndex = 0;
         const soundImages = ['sound-on', 'sound-off'];
 
-        // ========== ПЕРЕКЛЮЧАТЕЛЬ КЛАССА ==========
-        let classIndex = 0; // 0 или 1
-        const classImages = ['class-1', 'class-2']; // пока только 2 класса
-        // const classImages = ['class-1', 'class-2', 'class-3', 'class-4', 'class-5']; // полный список (закомментирован)
+        function updateSound() {
+            soundImages.forEach((id, idx) => {
+                const img = document.getElementById(id);
+                if (img) {
+                    if (idx === soundIndex) img.classList.remove('hidden');
+                    else img.classList.add('hidden');
+                }
+            });
+            isSoundEnabled = (soundIndex === 0);
+            playSound('TurnSwitchSound.mp3');
+        }
+
+        let classIndex = 0;
+        const classImages = ['class-1', 'class-2'];
 
         // ========== ДАННЫЕ ДЛЯ ФОРМЫ СОГЛАСИЯ ==========
         const CLASS_DATA = {
-            0: { // Класс 1 (индекс 0)
-                ru: { name: 'Классический', needAd: false },
-                en: { name: 'Classic', needAd: false }
-            },
-            1: { // Класс 2 (индекс 1)
-                ru: { name: 'Классический PRO', needAd: true },
-                en: { name: 'Classic PRO', needAd: true }
-            },
-            2: { // Класс 3 (индекс 2)
-                ru: { name: 'Битва на болотах', needAd: true },
-                en: { name: 'The Swamps', needAd: true }
-            },
-            3: { // Класс 4 (индекс 3)
-                ru: { name: 'Беспорядок', needAd: true },
-                en: { name: 'Mess', needAd: true }
-            },
-            4: { // Класс 5 (индекс 4)
-                ru: { name: 'Последний удар', needAd: true },
-                en: { name: 'The Last Hit', needAd: true }
-            }
+            0: { ru: { name: 'Классический', needAd: false }, en: { name: 'Classic', needAd: false } },
+            1: { ru: { name: 'Классический PRO', needAd: true }, en: { name: 'Classic PRO', needAd: true } }
         };
 
-        // ========== ПОЛУЧЕНИЕ ТЕКСТА ДЛЯ ФОРМЫ СОГЛАСИЯ ==========
         function getAgreementText() {
-            // Проверяем, какая кнопка языка сейчас скрыта
             const isEnglish = document.getElementById('btn-lang-ru').classList.contains('hidden');
             const lang = isEnglish ? 'en' : 'ru';
             const classData = CLASS_DATA[classIndex];
@@ -1809,27 +1687,33 @@ function setGameVersions() {
             playSound('TurnSwitchSound.mp3');
         }
 
-        document.getElementById('btn-class-left').addEventListener('click', () => {
-            classIndex = (classIndex - 1 + classImages.length) % classImages.length;
-            updateClass();
+        // ========== ОБРАБОТЧИКИ КНОПОК ==========
+        document.getElementById('btn-next').addEventListener('click', () => {
+            playSound('StartSound.mp3');
+            switchScreen('screen_start');
+            setTimeout(() => {
+                switchScreen('screen_settings');
+            }, 3000);
         });
 
-        document.getElementById('btn-class-right').addEventListener('click', () => {
-            classIndex = (classIndex + 1) % classImages.length;
-            updateClass();
+        document.getElementById('btn-field-left').addEventListener('click', () => {
+            fieldIndex = (fieldIndex - 1 + fieldImages.length) % fieldImages.length;
+            updateField();
+        });
+        document.getElementById('btn-field-right').addEventListener('click', () => {
+            fieldIndex = (fieldIndex + 1) % fieldImages.length;
+            updateField();
         });
 
-        function updateSound() {
-            soundImages.forEach((id, idx) => {
-                const img = document.getElementById(id);
-                if (img) {
-                    if (idx === soundIndex) img.classList.remove('hidden');
-                    else img.classList.add('hidden');
-                }
-            });
-            isSoundEnabled = (soundIndex === 0);
-            playSound('TurnSwitchSound.mp3');
-        }
+        document.getElementById('btn-player-left').addEventListener('click', () => {
+            playerIndex = (playerIndex - 1 + playerImages.length) % playerImages.length;
+            updatePlayer();
+        });
+        document.getElementById('btn-player-right').addEventListener('click', () => {
+            playerIndex = (playerIndex + 1) % playerImages.length;
+            updatePlayer();
+        });
+
         document.getElementById('btn-sound-left').addEventListener('click', () => {
             soundIndex = (soundIndex - 1 + soundImages.length) % soundImages.length;
             updateSound();
@@ -1839,23 +1723,39 @@ function setGameVersions() {
             updateSound();
         });
 
+        document.getElementById('btn-class-left').addEventListener('click', () => {
+            classIndex = (classIndex - 1 + classImages.length) % classImages.length;
+            updateClass();
+        });
+        document.getElementById('btn-class-right').addEventListener('click', () => {
+            classIndex = (classIndex + 1) % classImages.length;
+            updateClass();
+        });
+
         document.getElementById('btn-info').addEventListener('click', () => {
             playSound('OpenNewFormSound.mp3');
             switchScreen('screen_info');
         });
 
-        document.getElementById('btn-to-score').addEventListener('click', () => {
+        document.getElementById('btn-to-score').addEventListener('click', async function () {
             playSound('OpenNewFormSound.mp3');
-            updateStatsDisplay();
+            await renderStats();
             switchScreen('screen_score');
         });
 
-        // ----- ПЕРЕМЕННЫЕ ИГРЫ -----
+        document.getElementById('btn-score-to-menu').addEventListener('click', async function () {
+            playSound('OpenNewFormSound.mp3');
+            stopPhysics();
+            await showBannerAd();
+            switchScreen('screen_settings');
+        });
+
+        // ========== ИГРОВЫЕ ПЕРЕМЕННЫЕ ==========
         let activeCollisions = 0;
         let currentScale = 1;
         let isGameActive = false;
         let isComputerMode = false;
-        let isMasterMode = false; // true — режим "Высший класс" (без стрелки)
+        let isMasterMode = false;
         let computerDifficulty = 'hard';
 
         let redLines = 0;
@@ -1875,7 +1775,7 @@ function setGameVersions() {
             }
         }
 
-        // ----- ПАРАМЕТРЫ ШАШЕК И ПОЛЯ -----
+        // ========== ПАРАМЕТРЫ ШАШЕК И ПОЛЯ ==========
         const STONE_SIZE = 75;
         const FIELD_WIDTH = 800;
         const FIELD_HEIGHT = 800;
@@ -1895,7 +1795,7 @@ function setGameVersions() {
         let isResettingRound = false;
         let isComputerThinking = false;
 
-        // ----- ФИЗИЧЕСКИЕ ПАРАМЕТРЫ -----
+        // ========== ФИЗИЧЕСКИЕ ПАРАМЕТРЫ ==========
         const COLLISION_BOUNCE = 0.7;
         const FRICTION_AIR = 0.98;
         const FRICTION_GROUND = 0.996;
@@ -1905,7 +1805,7 @@ function setGameVersions() {
         let gameLoopId = null;
         let isPhysicsRunning = false;
 
-        // ----- СДВИГ ПОЛЯ -----
+        // ========== СДВИГ ПОЛЯ ==========
         let currentScrollPosition = 'center';
 
         function updateScrollPosition() {
@@ -1990,7 +1890,6 @@ function setGameVersions() {
 
             if (distance < minDist) {
                 if (distance > 1) {
-                    console.log(`[СТОЛКНОВЕНИЕ] ${s1.team} и ${s2.team}, расстояние: ${distance.toFixed(2)}`);
                     playSound('BeatSound.mp3');
                 }
 
@@ -2114,7 +2013,6 @@ function setGameVersions() {
 
                         setTimeout(() => {
                             if (isComputerMode && turnFlag === 0 && !isComputerThinking && isGameActive) {
-                                console.log('Компьютер делает ход после ничьей');
                                 if (computerDifficulty === 'easy') {
                                     makeComputerMoveEasy();
                                 } else {
@@ -2151,7 +2049,6 @@ function setGameVersions() {
 
                         setTimeout(() => {
                             if (isComputerMode && turnFlag === 0 && !isComputerThinking && isGameActive) {
-                                console.log('Компьютер делает ход после победы красных');
                                 if (computerDifficulty === 'easy') {
                                     makeComputerMoveEasy();
                                 } else {
@@ -2195,7 +2092,6 @@ function setGameVersions() {
                 } else {
                     console.log('Нет победителя, продолжаем игру');
                     if (isComputerMode && turnFlag === 0 && !isComputerThinking && isGameActive) {
-                        console.log('Компьютер делает ход');
                         if (computerDifficulty === 'easy') {
                             makeComputerMoveEasy();
                         } else {
@@ -2207,26 +2103,16 @@ function setGameVersions() {
         }
 
         function startPhysics() {
-            console.log('🔥 startPhysics() ВЫЗВАН');
-            console.log('  - isGameActive ДО:', isGameActive);
-            console.log('  - isPhysicsRunning ДО:', isPhysicsRunning);
-            console.log('  - gameLoopId ДО:', gameLoopId);
-
             if (gameLoopId) {
-                console.log('  - Отменяем старый gameLoopId');
                 cancelAnimationFrame(gameLoopId);
                 gameLoopId = null;
             }
 
-            console.log("startPhysics вызван");
             isPhysicsRunning = true;
             isGameActive = true;
-            console.log('  - isGameActive ПОСЛЕ:', isGameActive);
-            console.log('  - isPhysicsRunning ПОСЛЕ:', isPhysicsRunning);
 
             async function loop() {
                 if (!isGameActive) {
-                    console.log('⏸️ Цикл физики остановлен (isGameActive === false)');
                     return;
                 }
                 await updatePhysics();
@@ -2234,8 +2120,6 @@ function setGameVersions() {
             }
 
             gameLoopId = requestAnimationFrame(loop);
-            console.log('  - gameLoopId ПОСЛЕ:', gameLoopId);
-            console.log('🔥 startPhysics() ЗАВЕРШЁН');
         }
 
         function stopPhysics() {
@@ -2260,16 +2144,13 @@ function setGameVersions() {
             document.getElementById('agreement-overlay').classList.remove('active');
         }
 
-        // ========== РЕКЛАМА ЗА ВОЗНАГРАЖДЕНИЕ ==========
         function watchRewardAd() {
             console.log('🎬 Запрос рекламы за вознаграждение...');
 
-            // Показываем сообщение о загрузке
             const textElement = document.getElementById('agreement-text');
             if (textElement) {
                 const originalText = textElement.textContent;
                 textElement.textContent = '⏳ Загрузка рекламы...';
-                // Можно вернуть текст через 5 секунд, если что-то пошло не так
                 setTimeout(() => {
                     if (textElement.textContent === '⏳ Загрузка рекламы...') {
                         textElement.textContent = originalText;
@@ -2277,477 +2158,34 @@ function setGameVersions() {
                 }, 5000);
             }
 
-            // Проверяем, доступен ли VK Bridge
             if (typeof vkBridge === 'undefined' || !vkBridge || !isVKBridgeReady) {
-                console.warn('⚠️ VK Bridge не доступен, запускаем без рекламы (тестовый режим)');
-                // В тестовом режиме просто запускаем игру
+                console.warn('⚠️ VK Bridge не доступен, запускаем без рекламы');
                 startGame();
                 return;
             }
 
-            // Шаг 1: Проверяем, есть ли реклама для показа
             vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'reward' })
                 .then((data) => {
-                    console.log('📊 Проверка рекламы:', data);
-
                     if (data.result) {
-                        // Шаг 2: Реклама есть — показываем её
-                        console.log('📺 Показ рекламы...');
                         return vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
                     } else {
-                        console.log('⚠️ Рекламные материалы не найдены');
-                        // Реклама не готова — запускаем игру без рекламы (или показываем сообщение)
                         alert('Реклама временно недоступна, попробуйте позже.');
                         return null;
                     }
                 })
                 .then((result) => {
                     if (result && result.result) {
-                        console.log('✅ Реклама просмотрена! Запускаем игру.');
-                        // Реклама успешно показана — запускаем игру
                         startGame();
                     } else if (result === null) {
                         // Уже обработано выше
                     } else {
-                        console.log('❌ Реклама не была показана');
                         alert('Реклама не была показана, попробуйте ещё раз.');
                     }
                 })
                 .catch((error) => {
                     console.error('❌ Ошибка при работе с рекламой:', error);
-                    // Если ошибка — всё равно запускаем игру (или показываем сообщение)
                     alert('Произошла ошибка при загрузке рекламы. Попробуйте позже.');
                 });
-        }
-
-        // ========== ЛЁГКИЙ ХОД КОМПЬЮТЕРА ==========
-        function makeComputerMoveEasy() {
-            if (!isComputerMode) return;
-            if (isResettingRound) return;
-            if (turnFlag !== 0) return;
-            if (isComputerThinking) return;
-            if (!isGameActive) return;
-
-            let whiteStones = stonesList.filter(s => s.team === 'white' && s.active);
-            if (whiteStones.length === 0) {
-                console.log("У компьютера нет шашек для хода");
-                return;
-            }
-
-            let redStones = stonesList.filter(s => s.team === 'red' && s.active);
-            if (redStones.length === 0) {
-                console.log("Нет красных шашек");
-                return;
-            }
-
-            isComputerThinking = true;
-            console.log("🎯 Компьютер (легкий уровень) стреляет случайными углами...");
-
-            let bestScore = -Infinity;
-            let bestMove = null;
-
-            const angles = [];
-            for (let deg = 0; deg < 360; deg += 30) {
-                angles.push(deg * Math.PI / 180);
-            }
-
-            const powers = [];
-            for (let p = 8; p <= 28; p += 5) {
-                powers.push(p);
-            }
-
-            function deepSimulateShot(stone, angleRad, power) {
-                let simStones = [];
-                for (let s of stonesList) {
-                    simStones.push({
-                        team: s.team,
-                        x: s.x,
-                        y: s.y,
-                        vx: s.vx,
-                        vy: s.vy,
-                        radius: s.radius,
-                        active: s.active
-                    });
-                }
-
-                let simStone = simStones.find((s, idx) => {
-                    const originalStone = stonesList[idx];
-                    return originalStone.element === stone.element;
-                });
-                if (!simStone || !simStone.active) return { redDead: 0, whiteDead: 0 };
-
-                let velX = Math.cos(angleRad) * power;
-                let velY = Math.sin(angleRad) * power;
-                simStone.vx = velX;
-                simStone.vy = velY;
-
-                const FRICTION_AIR_SIM = 0.98;
-                const FRICTION_GROUND_SIM = 0.996;
-                const STOP_SPEED_SIM = 0.5;
-                const COLLISION_BOUNCE_SIM = 0.7;
-
-                function isOutOfBounds(stone) {
-                    const leftBound = BORDER;
-                    const rightBound = FIELD_WIDTH - BORDER;
-                    const topBound = BORDER;
-                    const bottomBound = FIELD_HEIGHT - BORDER;
-                    return (stone.x < leftBound || stone.x > rightBound || stone.y < topBound || stone.y > bottomBound);
-                }
-
-                function handleCollisionSim(s1, s2) {
-                    if (!s1.active || !s2.active) return;
-                    const dx = s1.x - s2.x;
-                    const dy = s1.y - s2.y;
-                    const distance = Math.hypot(dx, dy);
-                    const minDist = s1.radius + s2.radius;
-                    if (distance < minDist) {
-                        const angle = Math.atan2(dy, dx);
-                        const overlap = minDist - distance;
-                        const moveX = Math.cos(angle) * overlap * 0.5;
-                        const moveY = Math.sin(angle) * overlap * 0.5;
-                        s1.x += moveX;
-                        s1.y += moveY;
-                        s2.x -= moveX;
-                        s2.y -= moveY;
-                        const nx = dx / distance;
-                        const ny = dy / distance;
-                        const vrelx = s1.vx - s2.vx;
-                        const vrely = s1.vy - s2.vy;
-                        const imp = (1 + COLLISION_BOUNCE_SIM) * (vrelx * nx + vrely * ny) / 2;
-                        s1.vx -= imp * nx;
-                        s1.vy -= imp * ny;
-                        s2.vx += imp * nx;
-                        s2.vy += imp * ny;
-                    }
-                }
-
-                let redDead = 0;
-                let whiteDead = 0;
-
-                for (let step = 0; step < 2000; step++) {
-                    for (let s of simStones) {
-                        if (!s.active) continue;
-                        s.vx *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
-                        s.vy *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
-                        if (Math.abs(s.vx) < STOP_SPEED_SIM && Math.abs(s.vy) < STOP_SPEED_SIM) {
-                            s.vx = 0;
-                            s.vy = 0;
-                        }
-                        s.x += s.vx;
-                        s.y += s.vy;
-
-                        if (isOutOfBounds(s)) {
-                            s.active = false;
-                            if (s.team === 'red') redDead++;
-                            else if (s.team === 'white') whiteDead++;
-                            continue;
-                        }
-                    }
-
-                    for (let i = 0; i < simStones.length; i++) {
-                        for (let j = i + 1; j < simStones.length; j++) {
-                            handleCollisionSim(simStones[i], simStones[j]);
-                        }
-                    }
-
-                    let allStopped = true;
-                    for (let s of simStones) {
-                        if (s.active && (Math.abs(s.vx) > STOP_SPEED_SIM || Math.abs(s.vy) > STOP_SPEED_SIM)) {
-                            allStopped = false;
-                            break;
-                        }
-                    }
-                    if (allStopped) break;
-                }
-
-                return { redDead, whiteDead };
-            }
-
-            for (let stone of whiteStones) {
-                for (let angle of angles) {
-                    for (let power of powers) {
-                        const result = deepSimulateShot(stone, angle, power);
-                        const redDead = result.redDead;
-                        const whiteDead = result.whiteDead;
-
-                        let score = (redDead * 100) - (whiteDead * 80);
-
-                        if (redDead === 0 && whiteStones.length > 1) {
-                            score -= 30;
-                        }
-
-                        if (whiteStones.length === 1) {
-                            if (redDead > 0) {
-                                score += redDead * 500;
-                            } else {
-                                score -= 200;
-                            }
-                        }
-
-                        if (score > bestScore) {
-                            bestScore = score;
-                            bestMove = { stone: stone, angle: angle, power: power };
-                        }
-                    }
-                }
-            }
-
-            let selectedStone, selectedAngle, selectedPower;
-
-            if (bestMove && bestScore > -Infinity) {
-                selectedStone = bestMove.stone;
-                selectedAngle = bestMove.angle;
-                selectedPower = bestMove.power;
-                console.log(`💻 Компьютер (легкий): сила ${selectedPower.toFixed(1)}`);
-            } else {
-                selectedStone = whiteStones[Math.floor(Math.random() * whiteStones.length)];
-                selectedAngle = Math.random() * 2 * Math.PI;
-                selectedPower = 10 + Math.random() * 15;
-                console.log("⚠️ Резервный ход");
-            }
-
-            let velX = Math.cos(selectedAngle) * selectedPower;
-            let velY = Math.sin(selectedAngle) * selectedPower;
-            selectedStone.applyImpulse(velX, velY);
-
-            if (gameLoopId) {
-                cancelAnimationFrame(gameLoopId);
-                gameLoopId = null;
-            }
-
-            startPhysics();
-            turnFlag = 1;
-            updateTurnIndicator();
-            console.log(`Компьютер выстрелил. Ход красных`);
-
-            isComputerThinking = false;
-        }
-
-        // ========== СЛОЖНЫЙ ХОД КОМПЬЮТЕРА ==========
-        function makeComputerMoveHard() {
-            if (!isComputerMode) return;
-            if (isResettingRound) return;
-            if (turnFlag !== 0) return;
-            if (isComputerThinking) return;
-            if (!isGameActive) return;
-
-            let whiteStones = stonesList.filter(s => s.team === 'white' && s.active);
-            if (whiteStones.length === 0) {
-                console.log("У компьютера нет шашек для хода");
-                return;
-            }
-
-            let redStones = stonesList.filter(s => s.team === 'red' && s.active);
-            if (redStones.length === 0) {
-                console.log("Нет красных шашек");
-                return;
-            }
-
-            isComputerThinking = true;
-            console.log("🎯 Компьютер (сложный уровень) прицеливается со случайным шумом...");
-
-            const RADIUS = STONE_SIZE / 2;
-            const OFFSETS = [
-                { name: 'центр', baseX: 0, baseY: 0 },
-                { name: 'левый край', baseX: -RADIUS * 0.8, baseY: 0 },
-                { name: 'правый край', baseX: RADIUS * 0.8, baseY: 0 }
-            ];
-
-            const powers = [];
-            for (let p = 10; p <= 28; p += 6) {
-                powers.push(p);
-            }
-
-            let topMoves = [];
-            const TOP_MOVES_COUNT = 4;
-
-            function calculateAimAngle(whiteStone, targetX, targetY) {
-                const dx = targetX - whiteStone.x;
-                const dy = targetY - whiteStone.y;
-                return Math.atan2(dy, dx);
-            }
-
-            function deepSimulateShot(stone, angleRad, power) {
-                let simStones = [];
-                for (let s of stonesList) {
-                    simStones.push({
-                        team: s.team,
-                        x: s.x,
-                        y: s.y,
-                        vx: s.vx,
-                        vy: s.vy,
-                        radius: s.radius,
-                        active: s.active
-                    });
-                }
-
-                let simStone = simStones.find((s, idx) => {
-                    const originalStone = stonesList[idx];
-                    return originalStone.element === stone.element;
-                });
-                if (!simStone || !simStone.active) return { redDead: 0, whiteDead: 0 };
-
-                let velX = Math.cos(angleRad) * power;
-                let velY = Math.sin(angleRad) * power;
-                simStone.vx = velX;
-                simStone.vy = velY;
-
-                const FRICTION_AIR_SIM = 0.98;
-                const FRICTION_GROUND_SIM = 0.996;
-                const STOP_SPEED_SIM = 0.5;
-                const COLLISION_BOUNCE_SIM = 0.7;
-
-                function isOutOfBounds(stone) {
-                    const leftBound = BORDER;
-                    const rightBound = FIELD_WIDTH - BORDER;
-                    const topBound = BORDER;
-                    const bottomBound = FIELD_HEIGHT - BORDER;
-                    return (stone.x < leftBound || stone.x > rightBound || stone.y < topBound || stone.y > bottomBound);
-                }
-
-                function handleCollisionSim(s1, s2) {
-                    if (!s1.active || !s2.active) return;
-                    const dx = s1.x - s2.x;
-                    const dy = s1.y - s2.y;
-                    const distance = Math.hypot(dx, dy);
-                    const minDist = s1.radius + s2.radius;
-                    if (distance < minDist) {
-                        const angle = Math.atan2(dy, dx);
-                        const overlap = minDist - distance;
-                        const moveX = Math.cos(angle) * overlap * 0.5;
-                        const moveY = Math.sin(angle) * overlap * 0.5;
-                        s1.x += moveX;
-                        s1.y += moveY;
-                        s2.x -= moveX;
-                        s2.y -= moveY;
-                        const nx = dx / distance;
-                        const ny = dy / distance;
-                        const vrelx = s1.vx - s2.vx;
-                        const vrely = s1.vy - s2.vy;
-                        const imp = (1 + COLLISION_BOUNCE_SIM) * (vrelx * nx + vrely * ny) / 2;
-                        s1.vx -= imp * nx;
-                        s1.vy -= imp * ny;
-                        s2.vx += imp * nx;
-                        s2.vy += imp * ny;
-                    }
-                }
-
-                let redDead = 0;
-                let whiteDead = 0;
-
-                for (let step = 0; step < 2000; step++) {
-                    for (let s of simStones) {
-                        if (!s.active) continue;
-                        s.vx *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
-                        s.vy *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
-                        if (Math.abs(s.vx) < STOP_SPEED_SIM && Math.abs(s.vy) < STOP_SPEED_SIM) {
-                            s.vx = 0;
-                            s.vy = 0;
-                        }
-                        s.x += s.vx;
-                        s.y += s.vy;
-
-                        if (isOutOfBounds(s)) {
-                            s.active = false;
-                            if (s.team === 'red') redDead++;
-                            else if (s.team === 'white') whiteDead++;
-                            continue;
-                        }
-                    }
-
-                    for (let i = 0; i < simStones.length; i++) {
-                        for (let j = i + 1; j < simStones.length; j++) {
-                            handleCollisionSim(simStones[i], simStones[j]);
-                        }
-                    }
-
-                    let allStopped = true;
-                    for (let s of simStones) {
-                        if (s.active && (Math.abs(s.vx) > STOP_SPEED_SIM || Math.abs(s.vy) > STOP_SPEED_SIM)) {
-                            allStopped = false;
-                            break;
-                        }
-                    }
-                    if (allStopped) break;
-                }
-
-                return { redDead, whiteDead };
-            }
-
-            for (let stone of whiteStones) {
-                for (let red of redStones) {
-                    for (let offset of OFFSETS) {
-                        const randomNoiseX = (Math.random() - 0.5) * 50;
-                        const randomNoiseY = (Math.random() - 0.5) * 50;
-                        const targetX = red.x + offset.baseX + randomNoiseX;
-                        const targetY = red.y + offset.baseY + randomNoiseY;
-
-                        for (let power of powers) {
-                            const noisyPower = power + (Math.random() - 0.5) * 14;
-                            const finalPower = Math.max(8, Math.min(28, noisyPower));
-                            const angle = calculateAimAngle(stone, targetX, targetY);
-                            const result = deepSimulateShot(stone, angle, finalPower);
-                            const redDead = result.redDead;
-                            const whiteDead = result.whiteDead;
-
-                            let score = (redDead * 100) - (whiteDead * 80);
-
-                            if (redDead === 0 && whiteStones.length > 1) {
-                                score -= 30;
-                            }
-
-                            if (whiteStones.length === 1) {
-                                if (redDead > 0) {
-                                    score += redDead * 500;
-                                } else {
-                                    score -= 200;
-                                }
-                            }
-
-                            if (topMoves.length < TOP_MOVES_COUNT) {
-                                topMoves.push({ stone: stone, angle: angle, power: finalPower, score: score });
-                                topMoves.sort((a, b) => b.score - a.score);
-                            } else if (score > topMoves[topMoves.length - 1].score) {
-                                topMoves.pop();
-                                topMoves.push({ stone: stone, angle: angle, power: finalPower, score: score });
-                                topMoves.sort((a, b) => b.score - a.score);
-                            }
-                        }
-                    }
-                }
-            }
-
-            let selectedStone, selectedAngle, selectedPower;
-
-            if (topMoves.length > 0) {
-                const randomIndex = Math.floor(Math.random() * topMoves.length);
-                const selectedMove = topMoves[randomIndex];
-                selectedStone = selectedMove.stone;
-                selectedAngle = selectedMove.angle;
-                selectedPower = selectedMove.power;
-                console.log(`💻 Компьютер (сложный): выбрал ход из ${topMoves.length} лучших (сила ${selectedPower.toFixed(1)})`);
-            } else {
-                selectedStone = whiteStones[Math.floor(Math.random() * whiteStones.length)];
-                selectedAngle = Math.random() * 2 * Math.PI;
-                selectedPower = 10 + Math.random() * 15;
-                console.log("⚠️ Резервный ход");
-            }
-
-            let velX = Math.cos(selectedAngle) * selectedPower;
-            let velY = Math.sin(selectedAngle) * selectedPower;
-            selectedStone.applyImpulse(velX, velY);
-
-            if (gameLoopId) {
-                cancelAnimationFrame(gameLoopId);
-                gameLoopId = null;
-            }
-
-            startPhysics();
-            turnFlag = 1;
-            updateTurnIndicator();
-            console.log(`Компьютер выстрелил. Ход красных`);
-
-            isComputerThinking = false;
         }
 
         // ========== ПРИЦЕЛ И ВЫСТРЕЛ ИГРОКА ==========
@@ -2759,9 +2197,7 @@ function setGameVersions() {
         let currentStone = null;
 
         function createAimLine(x, y, angle, length, stoneWidth) {
-
             if (isMasterMode) {
-                // В режиме "Высший класс" — не показываем стрелку
                 return;
             }
 
@@ -2820,30 +2256,15 @@ function setGameVersions() {
         }
 
         function onStoneMouseDown(event, stoneElement) {
-            console.log('🖱️ onStoneMouseDown() ВЫЗВАН');
-            console.log('  - isGameActive:', isGameActive);
-            console.log('  - isResettingRound:', isResettingRound);
-            console.log('  - turnFlag:', turnFlag);
-            console.log('  - stoneTeam:', stoneElement.dataset.team);
-
             event.preventDefault();
             event.stopPropagation();
-            if (!isGameActive) {
-                console.log('  ❌ isGameActive === false, захват запрещён');
-                return;
-            }
-            if (isResettingRound) {
-                console.log('  ❌ isResettingRound === true, захват запрещён');
-                return;
-            }
+            if (!isGameActive) return;
+            if (isResettingRound) return;
 
             const stoneTeam = stoneElement.dataset.team;
             if ((turnFlag === 1 && stoneTeam !== 'red') || (turnFlag === 0 && stoneTeam !== 'white')) {
-                console.log(`  ❌ Сейчас ход ${turnFlag === 1 ? 'красных' : 'белых'}, а вы пытаетесь захватить ${stoneTeam}`);
                 return;
             }
-
-            console.log('  ✅ Захват разрешён, начинаем перетаскивание');
 
             stoneElement.classList.add('selected');
 
@@ -2854,17 +2275,12 @@ function setGameVersions() {
             const stoneRect = stoneElement.getBoundingClientRect();
             dragStartX = stoneRect.left + stoneRect.width / 2 - containerRect.left;
             dragStartY = stoneRect.top + stoneRect.height / 2 - containerRect.top;
-            console.log('🖱️ Захват шашки');
         }
 
         function onGlobalMouseMove(event) {
             if (!isGameActive) return;
             if (!isDragging || !selectedStone) return;
-
-            // В режиме "Высший класс" — не обновляем стрелку
-            if (isMasterMode) {
-                return;
-            }
+            if (isMasterMode) return;
 
             event.preventDefault();
             const containerRect = document.getElementById('game-board-container').getBoundingClientRect();
@@ -2903,7 +2319,6 @@ function setGameVersions() {
             }
             event.preventDefault();
 
-            // Убираем обводку со всех шашек
             document.querySelectorAll('.stone.selected').forEach(el => {
                 el.classList.remove('selected');
             });
@@ -2930,14 +2345,10 @@ function setGameVersions() {
             const dx = currentX - dragStartX;
             const dy = currentY - dragStartY;
 
-            console.log(`DEBUG: currentScale = ${currentScale}`);
             let rawDistance = Math.hypot(dx, dy);
-            console.log(`DEBUG: rawDistance = ${rawDistance}`);
 
             const MAX_ARROW_LENGTH_SCALED = 150 * currentScale;
             const MIN_DISTANCE_SCALED = 10 * currentScale;
-
-            console.log(`DEBUG: MAX_ARROW_LENGTH_SCALED = ${MAX_ARROW_LENGTH_SCALED}`);
 
             if (rawDistance < MIN_DISTANCE_SCALED) {
                 removeAimLine();
@@ -2949,9 +2360,6 @@ function setGameVersions() {
             let distance = Math.min(MAX_ARROW_LENGTH_SCALED, rawDistance);
             let power = 4 + (distance / MAX_ARROW_LENGTH_SCALED) * 27;
 
-            console.log(`[ВЫСТРЕЛ] Длина линии: ${distance.toFixed(2)}px, Сила удара: ${power.toFixed(2)}`);
-            console.log(`DEBUG: power = ${power}`);
-
             if (power > 3.5) {
                 const angle = Math.atan2(dy, dx);
                 const velocityX = -Math.cos(angle) * power;
@@ -2960,13 +2368,11 @@ function setGameVersions() {
                 if (stoneObj && stoneObj.active) {
                     stoneObj.applyImpulse(velocityX, velocityY);
                     startPhysics();
-                    console.log(`Выстрел! Сила: ${power.toFixed(2)}`);
                     turnFlag = turnFlag === 1 ? 0 : 1;
                     updateTurnIndicator();
                 }
             }
 
-            // Убираем обводку со всех шашек
             document.querySelectorAll('.stone.selected').forEach(el => {
                 el.classList.remove('selected');
             });
@@ -3017,7 +2423,7 @@ function setGameVersions() {
         placeStones();
         initPhysics();
 
-        // Обработчики сдвига поля
+        // ========== ОБРАБОТЧИКИ ИГРОВЫХ КНОПОК ==========
         document.getElementById('btn-move-left').addEventListener('click', () => {
             if (currentScrollPosition === 'right') {
                 currentScrollPosition = 'center';
@@ -3039,22 +2445,15 @@ function setGameVersions() {
         document.getElementById('btn-to-fight').addEventListener('click', async () => {
             playSound('OpenNewFormSound.mp3');
 
-            // Определяем класс игры
-            isMasterMode = (classIndex === 1); // класс 2 (индекс 1) — Высший класс
-            console.log(`Класс игры: ${isMasterMode ? 'Высший класс (без стрелки)' : 'Стандарт'}`);
-            console.log('classIndex =', classIndex);
+            isMasterMode = (classIndex === 1);
 
-            // Если выбран класс, требующий рекламу (класс 2 и выше)
             const classData = CLASS_DATA[classIndex];
-            console.log('classData =', classData);
 
             if (classData && classData.ru.needAd) {
-                console.log('✅ Показываем модальное окно согласия');
                 showAgreementForm();
                 return;
             }
 
-            // Для класса 1 (Классический) — запускаем игру сразу
             startGame();
         });
 
@@ -3062,7 +2461,6 @@ function setGameVersions() {
         async function startGame() {
             console.log('🚀 Запуск игры...');
 
-            // ========== НОВЫЙ БЛОК ДЛЯ СТАТИСТИКИ ==========
             let currentClassName = 'Классический';
             if (classIndex === 1) {
                 currentClassName = 'Классический PRO';
@@ -3075,18 +2473,13 @@ function setGameVersions() {
                 currentModeName = 'С компьютером (легко)';
             } else if (fieldIndex === 2) {
                 currentModeName = 'С компьютером (сложно)';
-            } else if (fieldIndex === 3) {
-                currentModeName = isComputerMode ? 'С компьютером (сложно)' : 'Два игрока';
             }
 
             window._currentClassName = currentClassName;
             window._currentModeName = currentModeName;
-            console.log(`📊 Статистика: класс="${currentClassName}", режим="${currentModeName}"`);
-    // ========== КОНЕЦ НОВОГО БЛОКА ==========
 
             isComputerMode = (fieldIndex === 1 || fieldIndex === 2);
             computerDifficulty = fieldIndex === 1 ? 'easy' : (fieldIndex === 2 ? 'hard' : 'hard');
-            console.log(`Режим игры: ${isComputerMode ? 'Против компьютера' : 'Два игрока'}, Сложность: ${computerDifficulty}`);
 
             currentScrollPosition = 'center';
             updateScrollPosition();
@@ -3119,7 +2512,6 @@ function setGameVersions() {
 
             if (isComputerMode && turnFlag === 0 && !isComputerThinking) {
                 setTimeout(() => {
-                    console.log("Компьютер делает первый ход");
                     if (computerDifficulty === 'easy') {
                         makeComputerMoveEasy();
                     } else {
@@ -3163,8 +2555,6 @@ function setGameVersions() {
 
             placeStones();
             initPhysics();
-
-            console.log('Перезапуск сражения');
         });
 
         document.getElementById('btn-to-menu').addEventListener('click', async () => {
@@ -3190,125 +2580,59 @@ function setGameVersions() {
             switchScreen('screen_settings');
         });
 
-// Кнопка "В меню" на странице 1
-document.getElementById('btn-info-to-menu-1').addEventListener('click', async () => {
-    playSound('OpenNewFormSound.mp3');
-    stopPhysics();
-    await showBannerAd();
-    switchScreen('screen_settings');
-});
-
-// Кнопка "В меню" на странице 2
-document.getElementById('btn-info-to-menu-2').addEventListener('click', async () => {
-    playSound('OpenNewFormSound.mp3');
-    stopPhysics();
-    await showBannerAd();
-    switchScreen('screen_settings');
-});
-
-        document.getElementById('btn-score-to-menu').addEventListener('click', async () => {
+        document.getElementById('btn-info-to-menu-1').addEventListener('click', async () => {
             playSound('OpenNewFormSound.mp3');
             stopPhysics();
             await showBannerAd();
             switchScreen('screen_settings');
         });
 
-        // ========== ОБРАБОТЧИКИ МОДАЛЬНОГО ОКНА ==========
-        // Кнопка "Согласен"
+        document.getElementById('btn-info-to-menu-2').addEventListener('click', async () => {
+            playSound('OpenNewFormSound.mp3');
+            stopPhysics();
+            await showBannerAd();
+            switchScreen('screen_settings');
+        });
+
         document.getElementById('btn-agree').addEventListener('click', () => {
             playSound('OpenNewFormSound.mp3');
             hideAgreementForm();
-            // Показываем рекламу за вознаграждение
             watchRewardAd();
         });
 
-        // Кнопка "Отмена"
         document.getElementById('btn-cancel').addEventListener('click', () => {
             playSound('OpenNewFormSound.mp3');
             hideAgreementForm();
             switchScreen('screen_settings');
         });
 
-        window.addEventListener('resize', () => {
-            updateScrollPosition();
+        // ========== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ИНФОРМАЦИИ ==========
+        let currentInfoPage = 1;
+
+        function switchInfoPage(page) {
+            const page1 = document.getElementById('info-page-1');
+            const page2 = document.getElementById('info-page-2');
+
+            if (page === 1) {
+                page1.classList.remove('hidden');
+                page2.classList.add('hidden');
+                currentInfoPage = 1;
+            } else {
+                page1.classList.add('hidden');
+                page2.classList.remove('hidden');
+                currentInfoPage = 2;
+            }
+        }
+
+        document.getElementById('btn-info-right').addEventListener('click', () => {
+            playSound('TurnSwitchSound.mp3');
+            switchInfoPage(2);
         });
 
-        // Инициализация
-        function fitGameToScreen() {
-    const container = document.getElementById('game-container');
-    if (!container) return;
-
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const gameWidth = 1080;
-    const gameHeight = 2400;
-
-    // Если экран шире 1080px — НЕ масштабируем, показываем фон
-    if (screenWidth >= gameWidth) {
-        currentScale = 1;
-        container.style.transform = 'scale(1)';
-        container.style.width = `${gameWidth}px`;
-        container.style.height = `${gameHeight}px`;
-        container.style.position = 'absolute';
-        container.style.left = `${(screenWidth - gameWidth) / 2}px`;
-        container.style.top = `${(screenHeight - gameHeight) / 2}px`;
-        container.classList.add('visible');
-        return;
-    }
-
-    // Если экран уже 1080px — масштабируем
-    const scaleX = screenWidth / gameWidth;
-    const scaleY = screenHeight / gameHeight;
-    currentScale = Math.min(scaleX, scaleY);
-
-    container.style.transform = `scale(${currentScale})`;
-    container.style.transformOrigin = 'top left';
-    container.style.width = `${gameWidth}px`;
-    container.style.height = `${gameHeight}px`;
-
-    const scaledWidth = gameWidth * currentScale;
-    const scaledHeight = gameHeight * currentScale;
-    container.style.position = 'absolute';
-    container.style.left = `${(screenWidth - scaledWidth) / 2}px`;
-    container.style.top = `${(screenHeight - scaledHeight) / 2}px`;
-
-    container.classList.add('visible');
-}
-
-        window.addEventListener('load', fitGameToScreen);
-        window.addEventListener('resize', fitGameToScreen);
-
-        // ========== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ИНФОРМАЦИИ ==========
-let currentInfoPage = 1;
-
-function switchInfoPage(page) {
-    const page1 = document.getElementById('info-page-1');
-    const page2 = document.getElementById('info-page-2');
-
-    if (page === 1) {
-        page1.classList.remove('hidden');
-        page2.classList.add('hidden');
-        currentInfoPage = 1;
-    } else {
-        page1.classList.add('hidden');
-        page2.classList.remove('hidden');
-        currentInfoPage = 2;
-    }
-}
-
-// Кнопка "Вправо" (на странице 1)
-document.getElementById('btn-info-right').addEventListener('click', () => {
-    playSound('TurnSwitchSound.mp3');
-    switchInfoPage(2);
-});
-
-// Кнопка "Влево" (на странице 2)
-document.getElementById('btn-info-left').addEventListener('click', () => {
-    playSound('TurnSwitchSound.mp3');
-    switchInfoPage(1);
-});
-
-
+        document.getElementById('btn-info-left').addEventListener('click', () => {
+            playSound('TurnSwitchSound.mp3');
+            switchInfoPage(1);
+        });
 
         // ========== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА ==========
         function changeLanguage(isEnglish) {
@@ -3346,7 +2670,6 @@ document.getElementById('btn-info-left').addEventListener('click', () => {
             const btnToFight = document.getElementById('btn-to-fight');
             const btnWinToMenu = document.getElementById('btn-win-to-menu');
             const btnLostToMenu = document.getElementById('btn-lost-to-menu');
-            const btnInfoToMenu = document.getElementById('btn-info-to-menu');
             const btnScoreToMenu = document.getElementById('btn-score-to-menu');
 
             if (btnResume) btnResume.src = `assets/images/Button_resume${isEnglish ? '_EN' : ''}.png`;
@@ -3354,51 +2677,18 @@ document.getElementById('btn-info-left').addEventListener('click', () => {
             if (btnToFight) btnToFight.src = `assets/images/Button_to_fight${isEnglish ? '_EN' : ''}.png`;
             if (btnWinToMenu) btnWinToMenu.src = `assets/images/Button_to_menu_3${isEnglish ? '_EN' : ''}.png`;
             if (btnLostToMenu) btnLostToMenu.src = `assets/images/Button_to_menu_2${isEnglish ? '_EN' : ''}.png`;
-            if (btnInfoToMenu) btnInfoToMenu.src = `assets/images/Button_to_menu_4${isEnglish ? '_EN' : ''}.png`;
             if (btnScoreToMenu) btnScoreToMenu.src = `assets/images/Button_to_menu_1${isEnglish ? '_EN' : ''}.png`;
 
-            const screenSettings = document.getElementById('screen_settings');
-            const screenGame = document.getElementById('screen_game');
-            const screenInfo = document.getElementById('screen_info');
-            const screenScore = document.getElementById('screen_score');
-            const screenFinalWin = document.getElementById('screen_final_win');
-            const screenFinalLost = document.getElementById('screen_final_lost');
+            const agreeBtn = document.getElementById('btn-agree');
+            const cancelBtn = document.getElementById('btn-cancel');
+            if (agreeBtn) agreeBtn.src = `assets/images/Button_Agree_Form_agreemment${isEnglish ? '_EN' : ''}.png`;
+            if (cancelBtn) cancelBtn.src = `assets/images/Button_Cancel_Form_agreemment${isEnglish ? '_EN' : ''}.png`;
 
-            if (screenSettings) screenSettings.style.backgroundImage = `url('assets/images/Screen_settings${isEnglish ? '_EN' : ''}.png')`;
-            if (screenGame) screenGame.style.backgroundImage = `url('assets/images/Screen_game${isEnglish ? '_EN' : ''}.png')`;
-            if (screenInfo) screenInfo.style.backgroundImage = `url('assets/images/Screen_info${isEnglish ? '_EN' : ''}.png')`;
-            if (screenScore) screenScore.style.backgroundImage = `url('assets/images/Screen_score${isEnglish ? '_EN' : ''}.png')`;
-            if (screenFinalWin) screenFinalWin.style.backgroundImage = `url('assets/images/Screen_final_win${isEnglish ? '_EN' : ''}.png')`;
-            if (screenFinalLost) screenFinalLost.style.backgroundImage = `url('assets/images/Screen_final_lost${isEnglish ? '_EN' : ''}.png')`;
+            const class1 = document.getElementById('class-1');
+            const class2 = document.getElementById('class-2');
+            if (class1) class1.src = `assets/images/Button_choose_class_1${isEnglish ? '_EN' : ''}.png`;
+            if (class2) class2.src = `assets/images/Button_choose_class_2${isEnglish ? '_EN' : ''}.png`;
 
-            const statLabels = document.querySelectorAll('.stat-label');
-            if (statLabels.length >= 5) {
-                if (isEnglish) {
-                    statLabels[0].textContent = 'Total games';
-                    statLabels[1].textContent = 'Red wins';
-                    statLabels[2].textContent = 'White wins';
-                    statLabels[3].textContent = 'Red win rate';
-                    statLabels[4].textContent = 'White win rate';
-                } else {
-                    statLabels[0].textContent = 'Всего игр';
-                    statLabels[1].textContent = 'Побед красных';
-                    statLabels[2].textContent = 'Побед белых';
-                    statLabels[3].textContent = 'Процент побед красных';
-                    statLabels[4].textContent = 'Процент побед белых';
-                }
-            }
-
-            const versionInfo = document.getElementById('game-version-info');
-            if (versionInfo) {
-                versionInfo.textContent = `${isEnglish ? 'Version:' : 'Версия:'} ${GAME_VERSION}`;
-            }
-
-const versionInfo2 = document.getElementById('game-version-info-2');
-if (versionInfo2) {
-    versionInfo2.textContent = `${isEnglish ? 'Version:' : 'Версия:'} ${GAME_VERSION}`;
-}
-
-            // Переключение текста на странице 1
             const infoTextRu = document.querySelector('.info-text-ru');
             const infoTextEn = document.querySelector('.info-text-en');
             if (infoTextRu && infoTextEn) {
@@ -3411,7 +2701,6 @@ if (versionInfo2) {
                 }
             }
 
-            // Переключение текста на странице 2
             const infoTextRu2 = document.querySelector('.info-text-ru-2');
             const infoTextEn2 = document.querySelector('.info-text-en-2');
             if (infoTextRu2 && infoTextEn2) {
@@ -3423,25 +2712,14 @@ if (versionInfo2) {
                     infoTextEn2.classList.add('hidden');
                 }
             }
-            // ===== Переключение языка для классов =====
-            const classImages = ['class-1', 'class-2']; // пока только 2
-            classImages.forEach((id, idx) => {
-                const img = document.getElementById(id);
-                if (img) {
-                    const num = idx + 1;
-                    img.src = `assets/images/Button_choose_class_${num}${isEnglish ? '_EN' : ''}.png`;
-                }
-            });
-            // ===== Переключение языка для формы согласия =====
-            const agreeBtn = document.getElementById('btn-agree');
-            const cancelBtn = document.getElementById('btn-cancel');
-            if (agreeBtn) {
-                agreeBtn.src = `assets/images/Button_Agree_Form_agreemment${isEnglish ? '_EN' : ''}.png`;
-                console.log('Кнопка "Согласен" обновлена:', agreeBtn.src);
+
+            const versionInfo = document.getElementById('game-version-info');
+            if (versionInfo) {
+                versionInfo.textContent = `${isEnglish ? 'Version:' : 'Версия:'} ${GAME_VERSION}`;
             }
-            if (cancelBtn) {
-                cancelBtn.src = `assets/images/Button_Cancel_Form_agreemment${isEnglish ? '_EN' : ''}.png`;
-                console.log('Кнопка "Отмена" обновлена:', cancelBtn.src);
+            const versionInfo2 = document.getElementById('game-version-info-2');
+            if (versionInfo2) {
+                versionInfo2.textContent = `${isEnglish ? 'Version:' : 'Версия:'} ${GAME_VERSION}`;
             }
         }
 
@@ -3458,6 +2736,365 @@ if (versionInfo2) {
             changeLanguage(false);
             playSound('TurnSwitchSound.mp3');
         });
+
+        // ========== ЛЁГКИЙ ХОД КОМПЬЮТЕРА ==========
+        function makeComputerMoveEasy() {
+            if (!isComputerMode) return;
+            if (isResettingRound) return;
+            if (turnFlag !== 0) return;
+            if (isComputerThinking) return;
+            if (!isGameActive) return;
+
+            let whiteStones = stonesList.filter(s => s.team === 'white' && s.active);
+            if (whiteStones.length === 0) return;
+
+            isComputerThinking = true;
+
+            let bestScore = -Infinity;
+            let bestMove = null;
+
+            const angles = [];
+            for (let deg = 0; deg < 360; deg += 30) {
+                angles.push(deg * Math.PI / 180);
+            }
+
+            const powers = [];
+            for (let p = 8; p <= 28; p += 5) {
+                powers.push(p);
+            }
+
+            for (let stone of whiteStones) {
+                for (let angle of angles) {
+                    for (let power of powers) {
+                        const result = simulateShot(stone, angle, power);
+                        const redDead = result.redDead;
+                        const whiteDead = result.whiteDead;
+
+                        let score = (redDead * 100) - (whiteDead * 80);
+
+                        if (redDead === 0 && whiteStones.length > 1) {
+                            score -= 30;
+                        }
+
+                        if (whiteStones.length === 1) {
+                            if (redDead > 0) {
+                                score += redDead * 500;
+                            } else {
+                                score -= 200;
+                            }
+                        }
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestMove = { stone: stone, angle: angle, power: power };
+                        }
+                    }
+                }
+            }
+
+            let selectedStone, selectedAngle, selectedPower;
+
+            if (bestMove && bestScore > -Infinity) {
+                selectedStone = bestMove.stone;
+                selectedAngle = bestMove.angle;
+                selectedPower = bestMove.power;
+            } else {
+                selectedStone = whiteStones[Math.floor(Math.random() * whiteStones.length)];
+                selectedAngle = Math.random() * 2 * Math.PI;
+                selectedPower = 10 + Math.random() * 15;
+            }
+
+            let velX = Math.cos(selectedAngle) * selectedPower;
+            let velY = Math.sin(selectedAngle) * selectedPower;
+            selectedStone.applyImpulse(velX, velY);
+
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+
+            startPhysics();
+            turnFlag = 1;
+            updateTurnIndicator();
+
+            isComputerThinking = false;
+        }
+
+        // ========== СЛОЖНЫЙ ХОД КОМПЬЮТЕРА ==========
+        function makeComputerMoveHard() {
+            if (!isComputerMode) return;
+            if (isResettingRound) return;
+            if (turnFlag !== 0) return;
+            if (isComputerThinking) return;
+            if (!isGameActive) return;
+
+            let whiteStones = stonesList.filter(s => s.team === 'white' && s.active);
+            if (whiteStones.length === 0) return;
+
+            let redStones = stonesList.filter(s => s.team === 'red' && s.active);
+            if (redStones.length === 0) return;
+
+            isComputerThinking = true;
+
+            const RADIUS = STONE_SIZE / 2;
+            const OFFSETS = [
+                { baseX: 0, baseY: 0 },
+                { baseX: -RADIUS * 0.8, baseY: 0 },
+                { baseX: RADIUS * 0.8, baseY: 0 }
+            ];
+
+            const powers = [];
+            for (let p = 10; p <= 28; p += 6) {
+                powers.push(p);
+            }
+
+            let topMoves = [];
+            const TOP_MOVES_COUNT = 4;
+
+            for (let stone of whiteStones) {
+                for (let red of redStones) {
+                    for (let offset of OFFSETS) {
+                        const randomNoiseX = (Math.random() - 0.5) * 50;
+                        const randomNoiseY = (Math.random() - 0.5) * 50;
+                        const targetX = red.x + offset.baseX + randomNoiseX;
+                        const targetY = red.y + offset.baseY + randomNoiseY;
+
+                        const dx = targetX - stone.x;
+                        const dy = targetY - stone.y;
+                        const angle = Math.atan2(dy, dx);
+
+                        for (let power of powers) {
+                            const noisyPower = power + (Math.random() - 0.5) * 14;
+                            const finalPower = Math.max(8, Math.min(28, noisyPower));
+                            const result = simulateShot(stone, angle, finalPower);
+                            const redDead = result.redDead;
+                            const whiteDead = result.whiteDead;
+
+                            let score = (redDead * 100) - (whiteDead * 80);
+
+                            if (redDead === 0 && whiteStones.length > 1) {
+                                score -= 30;
+                            }
+
+                            if (whiteStones.length === 1) {
+                                if (redDead > 0) {
+                                    score += redDead * 500;
+                                } else {
+                                    score -= 200;
+                                }
+                            }
+
+                            if (topMoves.length < TOP_MOVES_COUNT) {
+                                topMoves.push({ stone: stone, angle: angle, power: finalPower, score: score });
+                                topMoves.sort((a, b) => b.score - a.score);
+                            } else if (score > topMoves[topMoves.length - 1].score) {
+                                topMoves.pop();
+                                topMoves.push({ stone: stone, angle: angle, power: finalPower, score: score });
+                                topMoves.sort((a, b) => b.score - a.score);
+                            }
+                        }
+                    }
+                }
+            }
+
+            let selectedStone, selectedAngle, selectedPower;
+
+            if (topMoves.length > 0) {
+                const randomIndex = Math.floor(Math.random() * topMoves.length);
+                const selectedMove = topMoves[randomIndex];
+                selectedStone = selectedMove.stone;
+                selectedAngle = selectedMove.angle;
+                selectedPower = selectedMove.power;
+            } else {
+                selectedStone = whiteStones[Math.floor(Math.random() * whiteStones.length)];
+                selectedAngle = Math.random() * 2 * Math.PI;
+                selectedPower = 10 + Math.random() * 15;
+            }
+
+            let velX = Math.cos(selectedAngle) * selectedPower;
+            let velY = Math.sin(selectedAngle) * selectedPower;
+            selectedStone.applyImpulse(velX, velY);
+
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+
+            startPhysics();
+            turnFlag = 1;
+            updateTurnIndicator();
+
+            isComputerThinking = false;
+        }
+
+        // ========== ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ СИМУЛЯЦИИ ==========
+        function simulateShot(stone, angleRad, power) {
+            let simStones = [];
+            for (let s of stonesList) {
+                simStones.push({
+                    team: s.team,
+                    x: s.x,
+                    y: s.y,
+                    vx: s.vx,
+                    vy: s.vy,
+                    radius: s.radius,
+                    active: s.active
+                });
+            }
+
+            let simStone = simStones.find((s, idx) => {
+                const originalStone = stonesList[idx];
+                return originalStone.element === stone.element;
+            });
+            if (!simStone || !simStone.active) return { redDead: 0, whiteDead: 0 };
+
+            let velX = Math.cos(angleRad) * power;
+            let velY = Math.sin(angleRad) * power;
+            simStone.vx = velX;
+            simStone.vy = velY;
+
+            const FRICTION_AIR_SIM = 0.98;
+            const FRICTION_GROUND_SIM = 0.996;
+            const STOP_SPEED_SIM = 0.5;
+            const COLLISION_BOUNCE_SIM = 0.7;
+
+            function isOutOfBounds(stone) {
+                const leftBound = BORDER;
+                const rightBound = FIELD_WIDTH - BORDER;
+                const topBound = BORDER;
+                const bottomBound = FIELD_HEIGHT - BORDER;
+                return (stone.x < leftBound || stone.x > rightBound || stone.y < topBound || stone.y > bottomBound);
+            }
+
+            function handleCollisionSim(s1, s2) {
+                if (!s1.active || !s2.active) return;
+                const dx = s1.x - s2.x;
+                const dy = s1.y - s2.y;
+                const distance = Math.hypot(dx, dy);
+                const minDist = s1.radius + s2.radius;
+                if (distance < minDist) {
+                    const angle = Math.atan2(dy, dx);
+                    const overlap = minDist - distance;
+                    const moveX = Math.cos(angle) * overlap * 0.5;
+                    const moveY = Math.sin(angle) * overlap * 0.5;
+                    s1.x += moveX;
+                    s1.y += moveY;
+                    s2.x -= moveX;
+                    s2.y -= moveY;
+                    const nx = dx / distance;
+                    const ny = dy / distance;
+                    const vrelx = s1.vx - s2.vx;
+                    const vrely = s1.vy - s2.vy;
+                    const imp = (1 + COLLISION_BOUNCE_SIM) * (vrelx * nx + vrely * ny) / 2;
+                    s1.vx -= imp * nx;
+                    s1.vy -= imp * ny;
+                    s2.vx += imp * nx;
+                    s2.vy += imp * ny;
+                }
+            }
+
+            let redDead = 0;
+            let whiteDead = 0;
+
+            for (let step = 0; step < 2000; step++) {
+                for (let s of simStones) {
+                    if (!s.active) continue;
+                    s.vx *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
+                    s.vy *= FRICTION_AIR_SIM * FRICTION_GROUND_SIM;
+                    if (Math.abs(s.vx) < STOP_SPEED_SIM && Math.abs(s.vy) < STOP_SPEED_SIM) {
+                        s.vx = 0;
+                        s.vy = 0;
+                    }
+                    s.x += s.vx;
+                    s.y += s.vy;
+
+                    if (isOutOfBounds(s)) {
+                        s.active = false;
+                        if (s.team === 'red') redDead++;
+                        else if (s.team === 'white') whiteDead++;
+                        continue;
+                    }
+                }
+
+                for (let i = 0; i < simStones.length; i++) {
+                    for (let j = i + 1; j < simStones.length; j++) {
+                        handleCollisionSim(simStones[i], simStones[j]);
+                    }
+                }
+
+                let allStopped = true;
+                for (let s of simStones) {
+                    if (s.active && (Math.abs(s.vx) > STOP_SPEED_SIM || Math.abs(s.vy) > STOP_SPEED_SIM)) {
+                        allStopped = false;
+                        break;
+                    }
+                }
+                if (allStopped) break;
+            }
+
+            return { redDead, whiteDead };
+        }
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
+        function fitGameToScreen() {
+            const container = document.getElementById('game-container');
+            if (!container) return;
+
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const gameWidth = 1080;
+            const gameHeight = 2400;
+
+            const scaleX = screenWidth / gameWidth;
+            const scaleY = screenHeight / gameHeight;
+            currentScale = Math.min(scaleX, scaleY);
+
+            container.style.transform = `scale(${currentScale})`;
+            container.style.transformOrigin = 'top left';
+            container.style.width = `${gameWidth}px`;
+            container.style.height = `${gameHeight}px`;
+
+            const scaledWidth = gameWidth * currentScale;
+            const scaledHeight = gameHeight * currentScale;
+            container.style.position = 'absolute';
+            container.style.left = `${(screenWidth - scaledWidth) / 2}px`;
+            container.style.top = `${(screenHeight - scaledHeight) / 2}px`;
+
+            requestAnimationFrame(() => {
+                container.classList.add('visible');
+            });
+        }
+
+        // ========== ПЛАВНОЕ ПОЯВЛЕНИЕ КНОПКИ NEXT ==========
+        (function () {
+            const btnNext = document.getElementById('btn-next');
+            if (btnNext) {
+                const showButton = function () {
+                    btnNext.classList.add('loaded');
+                };
+
+                if (btnNext.complete && btnNext.naturalWidth > 0) {
+                    showButton();
+                } else {
+                    btnNext.addEventListener('load', showButton);
+                    btnNext.addEventListener('error', showButton);
+                    setTimeout(showButton, 3000);
+                }
+            }
+        })();
+
+        window.addEventListener('resize', () => {
+            updateScrollPosition();
+        });
+
+        window.addEventListener('load', () => {
+            fitGameToScreen();
+            setGameVersions();
+            changeLanguage(false);
+            document.body.classList.add('screen-next-active');
+        });
+
+        window.addEventListener('resize', fitGameToScreen);
 
         // ========== ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ==========
         async function init() {
@@ -3482,25 +3119,6 @@ if (versionInfo2) {
         }
 
         init();
-
-        // Плавное появление кнопки Next
-        (function() {
-            const btnNext = document.getElementById('btn-next');
-            if (btnNext) {
-                const showButton = function() {
-                    btnNext.classList.add('loaded');
-                };
-
-                if (btnNext.complete && btnNext.naturalWidth > 0) {
-                    showButton();
-                } else {
-                    btnNext.addEventListener('load', showButton);
-                    btnNext.addEventListener('error', showButton);
-                    setTimeout(showButton, 3000);
-                }
-            }
-        })();
-      
     </script>
 </body>
 </html>
