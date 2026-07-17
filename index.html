@@ -56,16 +56,26 @@
                 background-image: url('assets/images/BackFone_SecondForm.png');
             }
 
-            /* screen_game, screen_final_win, screen_final_lost — BackFone_Game.png */
+            /* screen_game — BackFone_Game.png */
             body.screen-game-active::before {
                 background-image: url('assets/images/BackFone_Game.png');
+            }
+
+            /* Фон для формы ПОБЕДЫ */
+            body.screen-win-active::before {
+                background-image: url('assets/images/BackFone_Win.png');
+            }
+
+            /* Фон для формы ПОРАЖЕНИЯ */
+            body.screen-lose-active::before {
+                background-image: url('assets/images/BackFone_Lose.png');
             }
 
         /* Остальные экраны (settings, info, score) — BackFone_Main.png (по умолчанию) */
 
         #game-container {
             width: 1080px;
-            height: 1920px;
+            height: 2400px;
             position: relative;
             background-color: transparent;
             overflow: hidden;
@@ -157,12 +167,19 @@
             left: 50%;
             transform: translateX(-50%);
             width: 85%;
-            max-width: 850px;
+            max-width: 950px;
             text-align: left;
             font-family: Arial, sans-serif;
             font-size: 33px;
             color: #000000;
             line-height: 1.5;
+            /* ===== НОВЫЙ БЛОК: фон и обводка ===== */
+            background: rgba(255, 255, 255, 0.92);
+            border: 15px solid #888888;
+            border-radius: 36px;
+            padding: 30px 35px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            /* ===== КОНЕЦ НОВОГО БЛОКА ===== */
         }
 
         .info-text-content {
@@ -188,7 +205,7 @@
             bottom: 500px;
             cursor: pointer;
             transition: transform 0.2s;
-            width: 110px;
+            width: 150px;
             height: auto;
             display: block;
         }
@@ -225,7 +242,7 @@
 
         /* ========== ЭКРАН НАСТРОЕК ========== */
         .choice-image {
-            width: 600px;
+            width: 750px;
             height: auto;
             display: block;
         }
@@ -237,19 +254,19 @@
         .arrow-btn {
             cursor: pointer;
             transition: transform 0.2s;
-            width: 80px;
+            width: 100px;
             height: auto;
             display: block;
-            transform: translateY(155px);
+            transform: translateY(195px);
         }
 
             .arrow-btn:active {
-                transform: translateY(155px) scale(0.9);
+                transform: translateY(195px) scale(0.9);
             }
 
         .choice-group {
             position: relative;
-            width: 600px;
+            width: 750px;
             height: auto;
         }
 
@@ -265,7 +282,7 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: 800px;
+            top: 650px;
             display: flex;
             align-items: flex-end;
             gap: 15px;
@@ -275,7 +292,7 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: 1100px;
+            top: 950px;
             display: flex;
             align-items: flex-end;
             gap: 15px;
@@ -285,7 +302,7 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: 1400px;
+            top: 1250px;
             display: flex;
             align-items: flex-end;
             gap: 15px;
@@ -295,7 +312,7 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: 500px;
+            top: 350px;
             display: flex;
             align-items: flex-end;
             gap: 15px;
@@ -307,13 +324,13 @@
             transform: translateX(-50%);
             bottom: 550px;
             display: flex;
-            gap: 120px;
+            gap: 100px;
         }
 
         .info-btn {
             cursor: pointer;
             transition: transform 0.2s;
-            width: 100px;
+            width: 150px;
             height: auto;
             display: block;
         }
@@ -377,7 +394,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 550px;
+            padding-top: 300px;
             padding-bottom: 100px;
         }
 
@@ -385,19 +402,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 45px;
-            margin-bottom: 30px;
+            gap: 60px;
+            margin-bottom: 40px;
         }
 
             .top-panel img {
-                height: 100px;
+                height: 150px;
                 width: auto;
             }
 
         .turn-indicator {
             position: relative;
-            width: 400px;
-            height: 70px;
+            width: 500px;
+            height: 100px;
+            margin-top: -60px; /* ← добавить */
         }
 
             .turn-indicator img {
@@ -411,23 +429,23 @@
         .score-block {
             display: flex;
             justify-content: space-between;
-            width: 700px;
-            margin-bottom: 50px;
+            width: 900px;
+            margin-bottom: 80px;
         }
 
         .score-left,
         .score-right {
-            font-size: 50px;
+            font-size: 60px;
             font-weight: bold;
             color: white;
             text-shadow: 2px 2px 4px black;
             background: rgba(0,0,0,0.5);
-            padding: 10px 20px;
+            padding: 15px 30px;
             border-radius: 20px;
         }
 
         .game-table {
-            width: 800px;
+            width: 900px;
             height: auto;
             display: block;
         }
@@ -436,13 +454,14 @@
             display: flex;
             justify-content: center;
             gap: 650px;
-            margin-bottom: 50px;
+            margin-top: 20px; /* ← добавить отступ сверху */
+            margin-bottom: 20px;
         }
 
         .rotate-btn {
             cursor: pointer;
             transition: transform 0.2s;
-            width: 80px;
+            width: 150px;
             height: auto;
         }
 
@@ -455,6 +474,7 @@
             flex-direction: column;
             align-items: center;
             gap: 30px;
+            margin-top: 10px; /* ← добавить отступ сверху */
         }
 
         .resume-btn,
@@ -472,7 +492,7 @@
 
         #game-scroll-container {
             position: relative;
-            width: 800px;
+            width: 900px;
             margin-bottom: 50px;
             transition: transform 0.3s ease-out;
         }
@@ -545,14 +565,17 @@
 
         .stats-container {
             position: absolute;
-            top: 400px;
+            top: 350px;
             left: 50%;
             transform: translateX(-50%);
-            width: 90%;
-            max-width: 900px;
-            font-size: 45px;
+            width: 85%;
+            max-width: 950px;
             text-align: center;
-            padding: 15px 20px;
+            padding: 30px 35px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 15px solid #555555;
+            border-radius: 26px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .stats-class {
@@ -630,7 +653,7 @@
             cursor: pointer;
             transition: transform 0.2s;
             position: absolute;
-            bottom: 300px;
+            bottom: 350px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -704,7 +727,7 @@
         .lang-btn {
             cursor: pointer;
             transition: transform 0.2s;
-            width: 100px;
+            width: 150px;
             height: auto;
             display: block;
         }
@@ -717,13 +740,150 @@
                 display: none;
             }
 
+        /* ========== ПОДСВЕТКА ИГРОВЫХ ЭЛЕМЕНТОВ ========== */
+
+        /* ===== ФОРМА ИГРЫ ===== */
+
+        /* Подсветка эмблемы звезды */
+        .star-icon {
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            transition: filter 0.3s ease;
+        }
+
+        /* Подсветка эмблемы креста */
+        .cross-icon {
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            transition: filter 0.3s ease;
+        }
+
+        /* Подсветка игрового поля */
+        .game-table {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+        /* Подсветка стрелок сдвига поля */
+        .rotate-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.2));
+            transition: filter 0.3s ease;
+        }
+
+            .rotate-btn:active {
+                filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            }
+
+        /* Кнопка "Перезапуск" */
+        .resume-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+            .resume-btn:active {
+                filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            }
+
+        /* Кнопка "В меню" на форме игры */
+        .menu-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+            .menu-btn:active {
+                filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            }
+
+        /* ===== ФОРМА НАСТРОЕК ===== */
+
+        /* Кнопка "Сражаться" */
+        .fight-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+            .fight-btn:active {
+                filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            }
+
+        /* Стрелки выбора в настройках */
+        .arrow-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+            .arrow-btn:active {
+                filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            }
+
+        /* Кнопки: Информация, Язык, Статистика, ВК */
+        .info-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+        .lang-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+            .info-btn:active,
+            .lang-btn:active {
+                filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            }
+
+        /* ===== ФОРМА ИНФОРМАЦИИ ===== */
+
+        /* Подсветка блока с текстом */
+        .info-text {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(255, 255, 255, 0.1), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Подсветка стрелок навигации в информации */
+        .info-arrow-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.2));
+            transition: filter 0.3s ease;
+        }
+
+            .info-arrow-btn:active {
+                filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            }
+
+        /* ===== ФОРМА СТАТИСТИКИ ===== */
+
+        /* Подсветка блока статистики */
+        .stats-container {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(255, 255, 255, 0.1), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* ===== ФОРМЫ ИНФОРМАЦИИ, СТАТИСТИКИ, ПОБЕДЫ, ПОРАЖЕНИЯ ===== */
+
+        /* Все кнопки "В меню" */
+        .final-btn,
+        .score-menu-btn {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+            .final-btn:active,
+            .score-menu-btn:active {
+                filter: drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.3));
+            }
+
+
+
         @media (max-width: 768px) {
             .info-text {
-                font-size: 26px;
+                font-size: 33px;
+                padding: 20px 20px !important;
+                border-width: 10px !important;
+                border-radius: 26px !important;
+                top: 300px !important;
+                width: 90% !important;
             }
 
             .info-version {
-                font-size: 26px;
+                font-size: 33px;
             }
 
             .agreement-text {
@@ -745,11 +905,17 @@
             }
 
             .stats-container {
-                top: 400px;
-                width: 94%;
-                padding: 10px 12px;
-                font-size: 35px;
-                max-height: 55vh;
+                position: absolute !important;
+                top: 400px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 94% !important;
+                padding: 20px 20px !important;
+                background: rgba(255, 255, 255, 0.92) !important;
+                border: 15px solid #888888 !important;
+                border-radius: 26px !important;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+                text-align: center !important;
             }
 
             .stats-class {
@@ -820,6 +986,11 @@
         </div>
 
         <div id="screen_settings" class="screen">
+            <!-- ЗАГОЛОВОК НАСТРОЕК -->
+            <div class="settings-title" style="position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 1080px; height: auto; z-index: 10;">
+                <img src="assets/images/Sign_Settings.png" alt="Настройки" class="settings-title-ru" style="display: block; width: 100%; height: auto; max-width: 1080px;">
+                <img src="assets/images/Sign_Settings_EN.png" alt="Settings" class="settings-title-en hidden" style="width: 100%; height: auto; max-width: 1080px;">
+            </div>
             <div class="block-class">
                 <img src="assets/images/Button_left_0_1.png" alt="Влево" class="arrow-btn" id="btn-class-left">
                 <div class="choice-group" id="class-group">
@@ -871,6 +1042,11 @@
         </div>
 
         <div id="screen_game" class="screen">
+            <!-- ЗАГОЛОВОК БИТВЫ -->
+            <div class="battle-title" style="position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 1080; height: auto; z-index: 10;">
+                <img src="assets/images/Sign_Battle.png" alt="Битва" class="battle-title-ru" style="display: block; width: auto; height: auto; max-width: 1080px;">
+                <img src="assets/images/Sign_Battle_EN.png" alt="Battle" class="battle-title-en hidden" style="width: auto; height: auto; max-width: 1080px;">
+            </div>
             <div class="game-content">
                 <div class="top-panel">
                     <img src="assets/images/Label_star.png" alt="Звезда" class="star-icon">
@@ -906,15 +1082,30 @@
         </div>
 
         <div id="screen_final_win" class="screen">
+            <!-- ЗАГОЛОВОК ПОБЕДЫ -->
+            <div class="win-title" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1080px; height: auto; z-index: 10;">
+                <img src="assets/images/Sign_Final_Win.png" alt="Победа!" class="win-title-ru" style="display: block; width: auto; height: auto; max-width: 1080px;">
+                <img src="assets/images/Sign_Final_Win_EN.png" alt="Victory!" class="win-title-en hidden" style="width: auto; height: auto; max-width: 1080px;">
+            </div>
             <img src="assets/images/Button_to_menu_3.png" alt="В меню" class="final-btn" id="btn-win-to-menu">
         </div>
 
         <div id="screen_final_lost" class="screen">
+            <!-- ЗАГОЛОВОК ПОРАЖЕНИЯ -->
+            <div class="lost-title" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1080px; height: auto; z-index: 10;">
+                <img src="assets/images/Sign_Final_Lost.png" alt="Поражение" class="lost-title-ru" style="display: block; width: auto; height: auto; max-width: 1080px;">
+                <img src="assets/images/Sign_Final_Lost_EN.png" alt="Defeat" class="lost-title-en hidden" style="width: auto; height: auto; max-width: 1080px;">
+            </div>
             <img src="assets/images/Button_to_menu_2.png" alt="В меню" class="final-btn" id="btn-lost-to-menu">
         </div>
 
         <div id="screen_info" class="screen">
             <div class="info-page" id="info-page-1">
+                <!-- ЗАГОЛОВОК ИНФОРМАЦИИ -->
+                <div class="info-title" style="position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 1080px; height: auto; z-index: 10;">
+                    <img src="assets/images/Sign_Info.png" alt="Информация" class="info-title-ru" style="display: block; width: auto; height: auto; max-width: 1080px;">
+                    <img src="assets/images/Sign_Info_EN.png" alt="Info" class="info-title-en hidden" style="width: auto; height: auto; max-width: 1080px;">
+                </div>
                 <div class="info-version" id="game-version-info"></div>
                 <div class="info-text">
                     <div class="info-text-content">
@@ -943,6 +1134,11 @@
             </div>
 
             <div class="info-page hidden" id="info-page-2">
+                <!-- ЗАГОЛОВОК ИНФОРМАЦИИ (ТОТ ЖЕ) -->
+                <div class="info-title" style="position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 1080px; height: auto; z-index: 10; ">
+                    <img src="assets/images/Sign_Info.png" alt="Информация" class="info-title-ru" style="display: block; width: auto; height: auto; max-width: 1080px;">
+                    <img src="assets/images/Sign_Info_EN.png" alt="Info" class="info-title-en hidden" style="width: auto; height: auto; max-width: 1080px;">
+                </div>
                 <div class="info-version" id="game-version-info-2"></div>
                 <div class="info-text">
                     <div class="info-text-content">
@@ -974,6 +1170,11 @@
         </div>
 
         <div id="screen_score" class="screen">
+            <!-- ЗАГОЛОВОК СТАТИСТИКИ -->
+            <div class="score-title" style="position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 1080px; height: auto; z-index: 10; ">
+                <img src="assets/images/Sign_Score.png" alt="Статистика" class="score-title-ru" style="display: block; width: auto; height: auto; max-width: 1080px;">
+                <img src="assets/images/Sign_Score_EN.png" alt="Statistics" class="score-title-en hidden" style="width: auto; height: auto; max-width: 1080px;">
+            </div>
             <div class="stats-container" id="stats-container">
                 <div class="stats-header-row">
                     <span>Всего игр</span>
@@ -1511,7 +1712,7 @@
         }
 
         // ========== ВЕРСИЯ ИГРЫ ==========
-        const GAME_VERSION = "1.1.2";
+        const GAME_VERSION = "1.1.3";
 
         function setGameVersions() {
             const versionStart = document.getElementById('game-version-start');
@@ -1552,7 +1753,9 @@
             document.body.classList.remove(
                 'screen-next-active',
                 'screen-start-active',
-                'screen-game-active'
+                'screen-game-active',
+                'screen-win-active',
+                'screen-lose-active'
             );
 
             // Устанавливаем нужный фон
@@ -1560,12 +1763,13 @@
                 document.body.classList.add('screen-next-active');
             } else if (screenId === 'screen_start') {
                 document.body.classList.add('screen-start-active');
-            } else if (screenId === 'screen_game' ||
-                screenId === 'screen_final_win' ||
-                screenId === 'screen_final_lost') {
+            } else if (screenId === 'screen_game') {
                 document.body.classList.add('screen-game-active');
+            } else if (screenId === 'screen_final_win') {
+                document.body.classList.add('screen-win-active');
+            } else if (screenId === 'screen_final_lost') {
+                document.body.classList.add('screen-lose-active');
             }
-            // screen_settings, screen_info, screen_score — используют BackFone_Main.png (по умолчанию)
 
             if (screenId === 'screen_info') {
                 switchInfoPage(1);
@@ -1776,11 +1980,11 @@
         }
 
         // ========== ПАРАМЕТРЫ ШАШЕК И ПОЛЯ ==========
-        const STONE_SIZE = 75;
-        const FIELD_WIDTH = 800;
-        const FIELD_HEIGHT = 800;
+        const STONE_SIZE = 85;
+        const FIELD_WIDTH = 900;
+        const FIELD_HEIGHT = 900;
         const BORDER = 5;
-        const stonePositions = [-320, -222, -124, -26, 72, 170, 268, 365];
+        const stonePositions = [-360, -250, -144, -29, 81, 191, 301, 411];
 
         const START_RED_Y = FIELD_HEIGHT - BORDER - STONE_SIZE / 2 - 15;
         const START_WHITE_Y = BORDER + STONE_SIZE / 2 + 15;
@@ -1788,7 +1992,7 @@
         let currentRedY = START_RED_Y;
         let currentWhiteY = START_WHITE_Y;
 
-        const LINE_HEIGHT = 98;
+        const LINE_HEIGHT = 109; //98
         const MIN_RED_Y = START_RED_Y - (7 * LINE_HEIGHT);
         const MAX_WHITE_Y = START_WHITE_Y + (7 * LINE_HEIGHT);
 
@@ -2721,6 +2925,31 @@
             if (versionInfo2) {
                 versionInfo2.textContent = `${isEnglish ? 'Version:' : 'Версия:'} ${GAME_VERSION}`;
             }
+
+            // ===== ЗАГОЛОВКИ =====
+            // Настройки
+            document.querySelector('.settings-title-ru')?.classList.toggle('hidden', isEnglish);
+            document.querySelector('.settings-title-en')?.classList.toggle('hidden', !isEnglish);
+
+            // Информация
+            document.querySelectorAll('.info-title-ru').forEach(el => el.classList.toggle('hidden', isEnglish));
+            document.querySelectorAll('.info-title-en').forEach(el => el.classList.toggle('hidden', !isEnglish));
+
+            // Статистика
+            document.querySelector('.score-title-ru')?.classList.toggle('hidden', isEnglish);
+            document.querySelector('.score-title-en')?.classList.toggle('hidden', !isEnglish);
+
+            // Победа
+            document.querySelector('.win-title-ru')?.classList.toggle('hidden', isEnglish);
+            document.querySelector('.win-title-en')?.classList.toggle('hidden', !isEnglish);
+
+            // Поражение
+            document.querySelector('.lost-title-ru')?.classList.toggle('hidden', isEnglish);
+            document.querySelector('.lost-title-en')?.classList.toggle('hidden', !isEnglish);
+
+            // Битва
+            document.querySelector('.battle-title-ru')?.classList.toggle('hidden', isEnglish);
+            document.querySelector('.battle-title-en')?.classList.toggle('hidden', !isEnglish);
         }
 
         document.getElementById('btn-lang-ru')?.addEventListener('click', () => {
